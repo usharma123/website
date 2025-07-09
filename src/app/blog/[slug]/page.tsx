@@ -6,6 +6,10 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import BlogPostClient from "./BlogPostClient";
 import CopyCodeBlock from "@/components/CopyCodeBlock";
 
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
 export async function generateStaticParams() {
   const postsDir = path.join(process.cwd(), 'src/content/posts');
   const files = fs.readdirSync(postsDir);
@@ -14,7 +18,7 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;
   const filePath = path.join(process.cwd(), 'src/content/posts', `${slug}.md`);
   const source = fs.readFileSync(filePath, 'utf8');

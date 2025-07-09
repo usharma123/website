@@ -15,9 +15,7 @@ export async function generateStaticParams() {
 }
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  // Await params in case it is a Promise (per Next.js dynamic route API)
-  const resolvedParams = await params;
-  const { slug } = resolvedParams;
+  const { slug } = params;
   const filePath = path.join(process.cwd(), 'src/content/posts', `${slug}.md`);
   const source = fs.readFileSync(filePath, 'utf8');
   const { content, data } = matter(source);

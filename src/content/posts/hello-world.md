@@ -1,7 +1,7 @@
 ---
 title: "Building My Portfolio & Blog with Next.js and Neobrutalism"
 description: "A detailed walkthrough of how I built this personal website using Next.js, Tailwind, and neobrutalist design."
-pubDate: "2024-06-01"
+pubDate: "2025-07-09"
 tags: ["nextjs", "portfolio", "blog", "neobrutalism", "tutorial"]
 ---
 

@@ -10,7 +10,7 @@ export default function Links() {
   const links: { icon: IconType; href: string }[] = [
     {
       icon: SiGmail,
-      href: 'mailto:johndoe@gmail.com',
+      href: 'mailto:utsav1@seas.upenn.edu',
     },
     {
       icon: SiGithub,
@@ -18,12 +18,9 @@ export default function Links() {
     },
     {
       icon: SiLinkedin,
-      href: 'https://www.linkedin.com/in/johndoe/',
+      href: 'https://www.linkedin.com/in/usharma124/',
     },
-    {
-      icon: SiMedium,
-      href: 'https://medium.com/@johndoe',
-    },
+    
   ]
 
   return (

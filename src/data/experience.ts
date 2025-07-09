@@ -6,28 +6,28 @@ const PAST_ROLES: {
   endDate: string
 }[] = [
   {
-    company: 'ACME Solutions',
-    role: 'CEO',
+    company: 'Vetra AI',
+    role: 'Co-Founder',
     description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam vel hic aspernatur molestiae exercitationem rerum reiciendis mollitia magnam harum ipsum?',
-    startDate: 'March 2023',
+      'Co-founded Vetra AI, a startup that uses AI to streamline patent and legal diligence, cutting hours of work to minutes.',
+    startDate: 'April 2024',
     endDate: 'Now',
   },
   {
-    company: 'Google',
-    role: 'Software Engineer',
+    company: 'Dream Team Engineering',
+    role: 'Vice President',
     description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam vel hic aspernatur molestiae exercitationem rerum reiciendis mollitia magnam harum ipsum?',
-    startDate: 'April 2021',
-    endDate: 'March 2023',
+      'Led a cross-functional team of 140+ students in developing a medical devices and software solutions for the Shands Hospital at the University of Florida.',
+    startDate: 'January 2025',
+    endDate: 'May',
   },
   {
-    company: 'Vercel',
-    role: 'Developer Advocate',
+    company: 'University of Florida',
+    role: 'Research Assistant',
     description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam vel hic aspernatur molestiae exercitationem rerum reiciendis mollitia magnam harum ipsum?',
-    startDate: 'April 2021',
-    endDate: 'June 2018',
+      'Worked on mutliple projects to develop clinically validated protocols regarding the use of AI in the medical field spanning from medical imaging, decision support systems, computer vision, and more.',
+    startDate: 'January 2023',
+    endDate: 'May 2025',
   },
 ]
 

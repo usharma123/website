@@ -17,11 +17,13 @@ export default function Work() {
                 className="border-border shadow-shadow rounded-base -bottom-[2px]! border-2"
                 ratio={71 / 26}
               >
-                <img
-                  className="rounded-base w-full"
-                  src={`${project.previewImage}`}
-                  alt={project.name}
-                />
+                {project.previewImage && (
+                  <img
+                    className="rounded-base w-full"
+                    src={project.previewImage}
+                    alt={project.name}
+                  />
+                )}
               </AspectRatio>
 
               <div className="text-main-foreground font-base mt-5">

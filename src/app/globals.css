@@ -1,29 +1,41 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(95.38% 0.0357 72.89);
+  --background: oklch(94.27% 0.0268 242.57);
   --secondary-background: oklch(100% 0 0);
   --foreground: oklch(0% 0 0);
   --main-foreground: oklch(0% 0 0);
-  --main: oklch(72.27% 0.1894 50.19);
+  --main: oklch(66.9% 0.18368 248.8066);
   --border: oklch(0% 0 0);
   --ring: oklch(0% 0 0);
   --overlay: oklch(0% 0 0 / 0.8);
   --shadow: 4px 4px 0px 0px var(--border);
+  --chart-1: #0099FF;
+  --chart-2: #FF4D50;
+  --chart-3: #FACC00;
+  --chart-4: #05E17A;
+  --chart-5: #7A83FF;
+  --chart-active-dot: #000;
 }
 
 .dark {
-  --background: oklch(26.86% 0.0327 60.06);
+  --background: oklch(27.08% 0.0336 240.69);
   --secondary-background: oklch(23.93% 0 0);
   --foreground: oklch(92.49% 0 0);
   --main-foreground: oklch(0% 0 0);
-  --main: oklch(67.56% 0.1796 49.61);
+  --main: oklch(61.9% 0.16907 248.5982);
   --border: oklch(0% 0 0);
   --ring: oklch(100% 0 0);
   --shadow: 4px 4px 0px 0px var(--border);
+  --chart-1: #008AE5;
+  --chart-2: #FF6669;
+  --chart-3: #E0B700;
+  --chart-4: #04C86D;
+  --chart-5: #7A83FF;
+  --chart-active-dot: #fff;
 }
 
 @theme inline {
@@ -35,6 +47,11 @@
   --color-border: var(--border);
   --color-overlay: var(--overlay);
   --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
   --spacing-boxShadowX: 4px;
   --spacing-boxShadowY: 4px;
@@ -45,41 +62,73 @@
   --font-weight-base: 500;
   --font-weight-heading: 700;
 }
-
-body {
-  background-color: var(--background);
-}
-
-body {
-  --sb-track-color: #ffffff;
-  --sb-thumb-color: #000000;
-}
-
-html.dark body,
-html.dark .scrollbar {
-  --sb-track-color: #1f1f1f;
-  --sb-thumb-color: #e6e6e6;
-}
-
-body::-webkit-scrollbar {
-  width: 20px;
-}
-
-body::-webkit-scrollbar-track {
-  background: var(--sb-track-color);
-  border-left: 4px solid #000;
-}
-
-html.dark body::-webkit-scrollbar-thumb {
-  border-left: 4px solid #000;
-}
-
-body::-webkit-scrollbar-thumb {
-  background: var(--sb-thumb-color);
-}
-
-@supports not selector(::-webkit-scrollbar) {
+  
+@layer base {
   body {
-    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+    @apply text-foreground font-base bg-background;
   }
+
+  h1, h2, h3, h4, h5, h6{
+    @apply font-heading;
+  }
+}
+
+/* Add more vertical spacing between blog post elements */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+.markdown-body p,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body pre {
+  margin-bottom: 1.5rem;
+}
+
+/* Block code (code blocks) */
+pre, pre code {
+  background: #e0f2fe; /* Tailwind sky-100 */
+  color: #0c223a;      /* Deep blue for contrast */
+  border-radius: 5px;
+  padding: 0.5em 1em;
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 1em;
+  border: 1px solid #38bdf8; /* Tailwind sky-400 */
+}
+
+pre {
+  overflow-x: visible;      /* Remove horizontal scroll */
+  white-space: pre-wrap;    /* Allow code to wrap */
+  word-break: break-word;   /* Break long words if needed */
+  margin: 1.5em 0;
+}
+
+/* Inline code (lighter sky blue) */
+code {
+  background: #bae6fd; /* Tailwind sky-200 */
+  color: #0c223a;
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  font-size: 0.95em;
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  border: 1px solid #7dd3fc; /* Tailwind sky-300 */
+}
+
+/* Prevent block code from inheriting inline code style */
+pre code {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font-size: 1em;
+}
+
+/* Optional: Add spacing to blog container if not already present */
+.markdown-body {
+  padding: 2rem 0;
 }

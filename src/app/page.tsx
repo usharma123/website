@@ -12,7 +12,7 @@ export default function Home() {
         <h1 className="text-2xl font-heading sm:text-4xl">Utsav Sharma</h1>
         <p className="mt-2 text-lg sm:text-xl">Avid Learner</p>
         <div className="mt-8 text-base sm:text-lg">
-          <p>Hi, I am an incoming Master's student at UPenn's School of Engineering and Applied Science studying Computer Science.</p>
+          <p>Hi, I am an incoming Master&apos;s student at UPenn&apos;s School of Engineering and Applied Science studying Computer Science.</p>
 
           <br />
 

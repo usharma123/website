@@ -29,7 +29,7 @@ export default function BlogPage() {
 
   return (
     <main className="max-w-3xl mx-auto py-12 px-4">
-      <h1 className="text-4xl font-heading mb-8" style={{ color: 'var(--main)' }}>Blog</h1>
+      <h1 className="text-4xl font-heading mb-8 text-black dark:text-white">Blog</h1>
       <div className="space-y-8">
         {posts.map((post) => (
           <article

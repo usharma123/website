@@ -7,7 +7,10 @@ export default function Experience() {
 
       {PAST_ROLES.map((role, id) => {
         return (
-          <div className="mb-8" key={id}>
+          <div
+            className="mb-8 bg-white/80 dark:bg-[#18191a] border-l-4 border-[var(--color-main)] rounded-[var(--radius-base)] shadow-[var(--shadow-shadow)] p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+            key={id}
+          >
             <h3 className="text-lg font-heading sm:text-xl">
               {role.role} @ {role.company}
             </h3>

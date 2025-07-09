@@ -161,4 +161,4 @@ I'm planning to use this site as a personal journal to document what I learn thr
 
 ---
 
-Thanks for reading! If you have questions or want to see more, check out the **[GitHub repo](https://github.com/neobrutalism-templates/portfolio)** or connect with me on social media.
+Thanks for reading! If you have questions or want to see more, check out the **[GitHub repo](https://github.com/usharma123/website/tree/main)** or connect with me on social media.

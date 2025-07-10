@@ -26,7 +26,7 @@ pnpm install
 
 ## 2. Customizing the Theme
 
-I wanted a cyan-based neobrutalist look, so I updated the CSS variables in `globals.css`:
+I wanted a sky blue neobrutalist look, so I updated the CSS variables in `globals.css`:
 
 ```css
 :root {

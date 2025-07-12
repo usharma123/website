@@ -11,7 +11,7 @@ const PAST_ROLES: {
     description:
       'Co-founded Vetra AI, a startup that uses AI to streamline patent and legal diligence, cutting hours of work to minutes.',
     startDate: 'April 2024',
-    endDate: 'Now',
+    endDate: 'Present',
   },
   {
     company: 'Dream Team Engineering',
@@ -19,7 +19,7 @@ const PAST_ROLES: {
     description:
       'Led a cross-functional team of 140+ students in developing a medical devices and software solutions for the Shands Hospital at the University of Florida.',
     startDate: 'January 2025',
-    endDate: 'May',
+    endDate: 'May 2025',
   },
   {
     company: 'University of Florida',

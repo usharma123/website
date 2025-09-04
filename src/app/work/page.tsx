@@ -19,7 +19,7 @@ export default function Work() {
               >
                 {project.previewImage && (
                   <img
-                    className="rounded-base w-full h-full object-contain"
+                    className="rounded-base w-full h-full object-cover object-center"
                     src={project.previewImage}
                     alt={project.name}
                   />

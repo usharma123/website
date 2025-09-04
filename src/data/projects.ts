@@ -7,7 +7,7 @@ const PROJECTS: {
 }[] = [
   {
     name: 'Markov Explorer',
-    description: 'Coming soon',
+    description: 'Markov Decision Process Visualizer and Optimizer',
     liveLink: 'https://markov-explorer.vercel.app/',
     previewImage: '/markov-explorer.png',
     repoUrl: 'https://github.com/usharma123/MarkovExplorer',

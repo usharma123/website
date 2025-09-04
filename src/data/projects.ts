@@ -8,9 +8,9 @@ const PROJECTS: {
   {
     name: 'Markov Explorer',
     description: 'Coming soon',
-    liveLink: '',
+    liveLink: 'https://markov-explorer.vercel.app/',
     previewImage: '/markov-explorer.png',
-    repoUrl: '',
+    repoUrl: 'https://github.com/usharma123/MarkovExplorer',
   },
 ]
 

@@ -14,12 +14,12 @@ export default function Work() {
               key={id}
             >
               <AspectRatio
-                className="border-border shadow-shadow rounded-base -bottom-[2px]! border-2"
+                className="border-border shadow-shadow rounded-base -bottom-[2px]! border-2 overflow-hidden"
                 ratio={71 / 26}
               >
                 {project.previewImage && (
                   <img
-                    className="rounded-base w-full"
+                    className="rounded-base w-full h-full object-contain"
                     src={project.previewImage}
                     alt={project.name}
                   />

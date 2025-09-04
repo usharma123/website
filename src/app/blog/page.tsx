@@ -14,7 +14,7 @@ type PostMeta = {
 function getPosts(): PostMeta[] {
   const postsDir = path.join(process.cwd(), 'src/content/posts');
   const files = fs.readdirSync(postsDir);
-  return files.map((file) => {
+  const posts = files.map((file) => {
     const filePath = path.join(postsDir, file);
     const { data } = matter(fs.readFileSync(filePath, 'utf8'));
     return {
@@ -22,6 +22,8 @@ function getPosts(): PostMeta[] {
       slug: file.replace(/\.mdx?$/, ''),
     } as PostMeta;
   });
+  // Sort posts by pubDate descending so the latest appears first
+  return posts.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
 }
 
 export default function BlogPage() {

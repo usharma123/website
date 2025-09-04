@@ -11,7 +11,7 @@ const PAST_ROLES: {
     description:
       'Co-founded Vetra AI, a startup that uses AI to streamline patent and legal diligence, cutting hours of work to minutes.',
     startDate: 'April 2024',
-    endDate: 'Present',
+    endDate: 'August 2025',
   },
   {
     company: 'Dream Team Engineering',

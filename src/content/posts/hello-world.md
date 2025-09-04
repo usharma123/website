@@ -153,7 +153,7 @@ I recently started learning **Next.js**, and this is my first attempt at buildin
 
 <br />
 
-I'm planning to use this site as a personal journal to document what I learn throughout my Masters, as well as to share mini data projects I work on. One of my goals is to build an app that brings together news from different sources and provides insights. I am calling it **News Aggregator** (name subject to change).
+I'm planning to use this site as a personal journal to document what I learn throughout my Masters, as well as to share mini data projects I work on. One of my goals is to create a **Markov process** calculator and visualizer.
 
 <br />
 

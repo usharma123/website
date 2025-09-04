@@ -6,10 +6,10 @@ const PROJECTS: {
   liveLink: string
 }[] = [
   {
-    name: 'News Aggregator',
+    name: 'Markov Explorer',
     description: 'Coming soon',
     liveLink: '',
-    previewImage: '/project1.png',
+    previewImage: '/markov-explorer.png',
     repoUrl: '',
   },
 ]

@@ -6,6 +6,14 @@ const PAST_ROLES: {
   endDate: string
 }[] = [
   {
+    company: 'Xoriant',
+    role: 'Software Engineer',
+    description:
+      'Consulting for CLS on application development of their CLSnet platform.',
+    startDate: 'November 2025',
+    endDate: 'Present',
+  },
+  {
     company: 'Vetra AI',
     role: 'Co-Founder',
     description:

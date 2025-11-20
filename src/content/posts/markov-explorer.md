@@ -11,7 +11,7 @@ tags: ["reinforcement-learning", "web-development", "visualization", "nextjs", "
 
 ## Introduction
 
-I watched a recent [Veritassium](https://www.youtube.com/watch?v=KZeIEiBrT_w&t=487s) video that inspired me to try to visualize any type of markov chain and this grew as a personal project to make Markov Decision Processes (MDPs) more approachable. While textbooks explain the theory, it can be hard to see how individual transitions and rewards add up. I wanted a tool that lets me build an MDP visually, run simulations, and watch reinforcement-learning algorithms improve a policy in real time. That idea grew into MarkovExplorer, a web application that mixes a drag-and-drop interface with a robust simulation and optimization engine.
+I watched a recent **[Veritassium](https://www.youtube.com/watch?v=KZeIEiBrT_w&t=487s)** video that inspired me to try to visualize any type of markov chain and this grew as a personal project to make Markov Decision Processes (MDPs) more approachable. While textbooks explain the theory, it can be hard to see how individual transitions and rewards add up. I wanted a tool that lets me build an MDP visually, run simulations, and watch reinforcement-learning algorithms improve a policy in real time. That idea grew into MarkovExplorer, a web application that mixes a drag-and-drop interface with a robust simulation and optimization engine.
 
 &nbsp;
 

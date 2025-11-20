@@ -14,7 +14,7 @@ export default function Links() {
     },
     {
       icon: SiGithub,
-      href: 'https://github.com/johndoe',
+      href: 'https://github.com/usharma123',
     },
     {
       icon: SiLinkedin,

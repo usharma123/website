@@ -12,6 +12,13 @@ const PROJECTS: {
     previewImage: '/markov-explorer.png',
     repoUrl: 'https://github.com/usharma123/MarkovExplorer',
   },
+  {
+    name: 'EverAfter',
+    description: 'Wedding logo generator using AI',
+    liveLink: 'https://tryeverafter.dev/',
+    previewImage: '/ever-after.png',
+    repoUrl: 'https://github.com/usharma123/EverAfter',
+  },
 ]
 
 export default PROJECTS

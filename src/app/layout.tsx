@@ -22,7 +22,7 @@ export default function RootLayout({
         <body className={montserrat.className} suppressHydrationWarning={true}>
           <ThemeProvider attribute="class" disableTransitionOnChange>
             <Nav />
-            <div className="text-foreground mx-auto w-[750px] max-w-full px-5 pt-28 pb-10">
+            <div className="text-foreground mx-auto w-[750px] max-w-full px-5 pt-16 pb-10">
               {children}
             </div>
           </ThemeProvider>

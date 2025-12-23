@@ -1,15 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import {
-  IconType,
-  SiGithub,
-  SiGmail,
-  SiLinkedin,
-} from '@icons-pack/react-simple-icons'
+import { SiGithub, SiGmail } from '@icons-pack/react-simple-icons'
+import { Linkedin, LucideIcon } from 'lucide-react'
+
+type IconComponent = typeof SiGithub | LucideIcon
 
 export default function Links() {
-  const links: { icon: IconType; href: string; label: string }[] = [
+  const links: { icon: IconComponent; href: string; label: string }[] = [
     {
       icon: SiGmail,
       href: 'mailto:utsav1@seas.upenn.edu',
@@ -21,7 +19,7 @@ export default function Links() {
       label: 'GitHub',
     },
     {
-      icon: SiLinkedin,
+      icon: Linkedin,
       href: 'https://www.linkedin.com/in/usharma124/',
       label: 'LinkedIn',
     },
@@ -36,7 +34,7 @@ export default function Links() {
         staggerChildren: 0.1,
       },
     },
-  }
+  } as const
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20, scale: 0.8 },
@@ -46,10 +44,10 @@ export default function Links() {
       scale: 1,
       transition: {
         duration: 0.4,
-        ease: [0.25, 0.4, 0.25, 1],
+        ease: "easeOut" as const,
       },
     },
-  }
+  } as const
 
   return (
     <motion.div
@@ -76,7 +74,6 @@ export default function Links() {
             aria-label={link.label}
           >
             <Icon 
-              title="" 
               className="w-6 h-6 transition-transform group-hover:scale-110" 
             />
             {/* Tooltip */}

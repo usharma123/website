@@ -37,7 +37,7 @@ export default function AnimatedSection({
       transition={{
         duration: 0.6,
         delay,
-        ease: [0.25, 0.4, 0.25, 1],
+        ease: "easeOut" as const,
       }}
       className={className}
     >

@@ -1,6 +1,6 @@
 import {
   type IconType,
-  SiCss3,
+  SiCss,
   SiHtml5,
   SiJavascript,
   SiNextdotjs,
@@ -10,15 +10,17 @@ import {
   SiPostgresql,
   SiDocker,
   SiPython,
-  SiAmazonwebservices,
 } from '@icons-pack/react-simple-icons'
+import { Cloud, LucideIcon } from 'lucide-react'
 
-const SKILLS: { field: string; skills: { skill: string; icon: IconType }[] }[] = [
+type SkillIcon = IconType | LucideIcon
+
+const SKILLS: { field: string; skills: { skill: string; icon: SkillIcon }[] }[] = [
   {
     field: 'Frontend',
     skills: [
       { skill: 'html', icon: SiHtml5 },
-      { skill: 'css', icon: SiCss3 },
+      { skill: 'css', icon: SiCss },
       { skill: 'javascript', icon: SiJavascript },
       { skill: 'react', icon: SiReact },
       { skill: 'tailwind', icon: SiTailwindcss },
@@ -32,7 +34,7 @@ const SKILLS: { field: string; skills: { skill: string; icon: IconType }[] }[] =
       { skill: 'postgresql', icon: SiPostgresql },
       { skill: 'python', icon: SiPython },
       { skill: 'docker', icon: SiDocker },
-      { skill: 'aws', icon: SiAmazonwebservices },
+      { skill: 'aws', icon: Cloud },
     ],
   },
 ]

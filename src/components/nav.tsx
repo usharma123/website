@@ -19,7 +19,7 @@ export default function Nav() {
     <motion.div
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: [0.25, 0.4, 0.25, 1] }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       className="mt-5 w-full flex justify-center"
     >
       <nav className="text-main-foreground border-border shadow-shadow rounded-base bg-main font-base flex items-center max-w-2xl mx-auto gap-1 sm:gap-6 border-2 p-1.5 px-1 sm:p-2.5 sm:px-8 text-sm sm:text-base overflow-x-auto">

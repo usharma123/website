@@ -12,7 +12,7 @@ const containerVariants = {
       staggerChildren: 0.2,
     },
   },
-}
+} as const
 
 const cardVariants = {
   hidden: { opacity: 0, x: -50, scale: 0.95 },
@@ -22,10 +22,10 @@ const cardVariants = {
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: [0.25, 0.4, 0.25, 1],
+      ease: "easeOut" as const,
     },
   },
-}
+} as const
 
 export default function Experience() {
   return (
@@ -50,7 +50,7 @@ export default function Experience() {
         <motion.div
           initial={{ scaleY: 0 }}
           animate={{ scaleY: 1 }}
-          transition={{ duration: 1.2, delay: 0.3, ease: [0.25, 0.4, 0.25, 1] }}
+          transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
           className="absolute left-[11px] sm:left-[15px] top-2 bottom-2 w-[3px] origin-top"
           style={{
             background: 'linear-gradient(to bottom, var(--main), var(--main) 60%, transparent)',

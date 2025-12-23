@@ -19,7 +19,7 @@ const containerVariants = {
       staggerChildren: 0.05,
     },
   },
-}
+} as const
 
 const iconVariants = {
   hidden: { opacity: 0, scale: 0, rotate: -180 },
@@ -28,12 +28,12 @@ const iconVariants = {
     scale: 1,
     rotate: 0,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 200,
       damping: 15,
     },
   },
-}
+} as const
 
 export default function Skills() {
   return (

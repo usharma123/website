@@ -20,7 +20,7 @@ const containerVariants = {
       staggerChildren: 0.1,
     },
   },
-}
+} as const
 
 const cardVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -29,10 +29,10 @@ const cardVariants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: [0.25, 0.4, 0.25, 1],
+      ease: "easeOut" as const,
     },
   },
-}
+} as const
 
 const tagVariants = {
   hidden: { opacity: 0, scale: 0.8 },
@@ -43,7 +43,7 @@ const tagVariants = {
       duration: 0.3,
     },
   },
-}
+} as const
 
 export default function BlogPageClient({ posts }: { posts: PostMeta[] }) {
   return (

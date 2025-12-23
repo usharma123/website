@@ -197,10 +197,6 @@ pre code {
   50% { opacity: 0.08; }
 }
 
-.dark @keyframes gridPulse {
-  0%, 100% { opacity: 0.08; }
-  50% { opacity: 0.04; }
-}
 
 /* ========================================
    ANIMATED LINK UNDERLINES

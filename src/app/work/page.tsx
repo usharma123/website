@@ -14,7 +14,7 @@ const containerVariants = {
       staggerChildren: 0.15,
     },
   },
-}
+} as const
 
 const cardVariants = {
   hidden: { opacity: 0, y: 50, rotateX: -10 },
@@ -24,10 +24,10 @@ const cardVariants = {
     rotateX: 0,
     transition: {
       duration: 0.6,
-      ease: [0.25, 0.4, 0.25, 1],
+      ease: "easeOut" as const,
     },
   },
-}
+} as const
 
 export default function Work() {
   return (

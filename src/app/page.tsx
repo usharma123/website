@@ -15,7 +15,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           whileHover={{ scale: 1.02, rotate: 2 }}
           className="relative"
         >

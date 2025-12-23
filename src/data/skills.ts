@@ -10,7 +10,7 @@ import {
   SiPostgresql,
   SiDocker,
   SiPython,
-  SiAmazonaws,
+  SiAmazonwebservices,
 } from '@icons-pack/react-simple-icons'
 
 const SKILLS: { field: string; skills: { skill: string; icon: IconType }[] }[] = [
@@ -32,7 +32,7 @@ const SKILLS: { field: string; skills: { skill: string; icon: IconType }[] }[] =
       { skill: 'postgresql', icon: SiPostgresql },
       { skill: 'python', icon: SiPython },
       { skill: 'docker', icon: SiDocker },
-      { skill: 'aws', icon: SiAmazonaws },
+      { skill: 'aws', icon: SiAmazonwebservices },
     ],
   },
 ]

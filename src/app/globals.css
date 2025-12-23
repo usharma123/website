@@ -61,15 +61,48 @@
   --shadow-shadow: var(--shadow);
   --font-weight-base: 500;
   --font-weight-heading: 700;
+  
+  --font-heading: var(--font-heading), 'Space Grotesk', system-ui, sans-serif;
+  --font-body: var(--font-body), 'DM Sans', system-ui, sans-serif;
 }
   
 @layer base {
   body {
     @apply text-foreground font-base bg-background;
+    font-family: var(--font-body);
   }
 
-  h1, h2, h3, h4, h5, h6{
+  h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
+    font-family: var(--font-heading);
+  }
+  
+  /* Custom selection color */
+  ::selection {
+    background: var(--main);
+    color: var(--main-foreground);
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+    border-left: 2px solid var(--border);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--main);
+    border: 2px solid var(--border);
+    border-radius: 0;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--main);
+    opacity: 0.8;
   }
 }
 
@@ -131,4 +164,177 @@ pre code {
 /* Optional: Add spacing to blog container if not already present */
 .markdown-body {
   padding: 2rem 0;
+}
+
+/* ========================================
+   ANIMATED BACKGROUND GRID
+   ======================================== */
+.animated-grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.animated-grid-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0);
+  background-size: 40px 40px;
+  opacity: 0.15;
+  animation: gridPulse 8s ease-in-out infinite;
+}
+
+.dark .animated-grid-bg::before {
+  opacity: 0.08;
+}
+
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.08; }
+}
+
+.dark @keyframes gridPulse {
+  0%, 100% { opacity: 0.08; }
+  50% { opacity: 0.04; }
+}
+
+/* ========================================
+   ANIMATED LINK UNDERLINES
+   ======================================== */
+.animated-link {
+  position: relative;
+  text-decoration: none;
+}
+
+.animated-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--main);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-link:hover::after {
+  width: 100%;
+}
+
+/* ========================================
+   BUTTON PRESS ANIMATION
+   ======================================== */
+.neo-button {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neo-button:active {
+  transform: translate(4px, 4px);
+  box-shadow: none !important;
+}
+
+/* ========================================
+   CARD HOVER EFFECTS
+   ======================================== */
+.neo-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neo-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px var(--border);
+}
+
+/* ========================================
+   FOCUS STATES
+   ======================================== */
+*:focus-visible {
+  outline: 3px solid var(--main);
+  outline-offset: 2px;
+  border-radius: var(--radius-base);
+}
+
+/* ========================================
+   FLOATING ANIMATION UTILITIES
+   ======================================== */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes floatRotate {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes drawLine {
+  from { height: 0; }
+  to { height: 100%; }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-rotate {
+  animation: floatRotate 4s ease-in-out infinite;
+}
+
+.animate-wiggle:hover {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+.animate-slide-down {
+  animation: slideInDown 0.5s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.5s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
 }

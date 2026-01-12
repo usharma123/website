@@ -6,22 +6,32 @@ import { Linkedin, LucideIcon } from 'lucide-react'
 
 type IconComponent = typeof SiGithub | LucideIcon
 
+interface LinkItem {
+  icon: IconComponent
+  href: string
+  label: string
+  color: string
+}
+
 export default function Links() {
-  const links: { icon: IconComponent; href: string; label: string }[] = [
+  const links: LinkItem[] = [
     {
       icon: SiGmail,
       href: 'mailto:utsav1@seas.upenn.edu',
       label: 'Email',
+      color: 'var(--accent-yellow)',
     },
     {
       icon: SiGithub,
       href: 'https://github.com/usharma123',
       label: 'GitHub',
+      color: 'var(--accent-teal)',
     },
     {
       icon: Linkedin,
       href: 'https://www.linkedin.com/in/usharma124/',
       label: 'LinkedIn',
+      color: 'var(--accent-lime)',
     },
   ]
 
@@ -30,21 +40,21 @@ export default function Links() {
     visible: {
       opacity: 1,
       transition: {
-        delayChildren: 1.8,
-        staggerChildren: 0.1,
+        delayChildren: 1.2,
+        staggerChildren: 0.15,
       },
     },
   } as const
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.8 },
+    hidden: { opacity: 0, y: 30, scale: 0.7 },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
       transition: {
         duration: 0.4,
-        ease: "easeOut" as const,
+        ease: [0.22, 1, 0.36, 1],
       },
     },
   } as const
@@ -54,7 +64,7 @@ export default function Links() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="mr-auto mt-16 flex w-full flex-wrap items-center gap-6"
+      className="mr-auto mt-10 flex w-full flex-wrap items-center gap-4"
     >
       {links.map((link, id) => {
         const Icon = link.icon
@@ -64,22 +74,35 @@ export default function Links() {
             variants={itemVariants}
             target="_blank"
             href={link.href}
-            className="group relative p-3 rounded-[var(--radius-base)] border-2 border-[var(--color-border)] bg-[var(--color-secondary-background)] shadow-[var(--shadow-shadow)] transition-all neo-button"
-            whileHover={{ 
-              scale: 1.1,
-              rotate: [0, -5, 5, 0],
-              transition: { duration: 0.3 }
+            className="group relative p-4 border-4 border-[var(--color-border)] bg-[var(--color-secondary-background)] shadow-[6px_6px_0px_0px_var(--border)] transition-all overflow-hidden"
+            whileHover={{
+              x: -4,
+              y: -4,
+              boxShadow: '10px 10px 0px 0px var(--border)',
             }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ x: 6, y: 6, boxShadow: 'none' }}
             aria-label={link.label}
           >
-            <Icon 
-              className="w-6 h-6 transition-transform group-hover:scale-110" 
+            {/* Hover background effect */}
+            <motion.div
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              style={{ background: link.color }}
             />
-            {/* Tooltip */}
-            <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-medium bg-[var(--color-border)] text-[var(--color-background)] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+
+            <Icon className="relative z-10 w-7 h-7 transition-transform group-hover:scale-110" />
+
+            {/* Bold Tooltip */}
+            <motion.span
+              className="absolute -bottom-12 left-1/2 -translate-x-1/2 px-3 py-2 text-xs font-heading font-bold uppercase tracking-wider bg-[var(--color-border)] text-[var(--color-background)] border-3 border-[var(--color-border)] opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap shadow-[3px_3px_0_0_var(--main)]"
+            >
               {link.label}
-            </span>
+            </motion.span>
+
+            {/* Corner decoration */}
+            <div
+              className="absolute -top-1.5 -right-1.5 w-4 h-4 border-3 border-[var(--color-border)] opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ background: link.color }}
+            />
           </motion.a>
         )
       })}

@@ -636,6 +636,187 @@ pre code {
   font-size: 1em;
 }
 
+/* Reset ALL text decorations inside code blocks */
+pre *,
+pre code *,
+.markdown-body pre *,
+.markdown-body pre code * {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  border-bottom: none !important;
+}
+
+/* Ensure prose doesn't style code block contents */
+.prose pre,
+.prose pre *,
+.prose code,
+.prose pre code,
+.prose pre code * {
+  text-decoration: none !important;
+}
+
+/* ========================================
+   SYNTAX HIGHLIGHTING - NEOBRUTALIST THEME
+   ======================================== */
+/* Base code styling */
+.hljs {
+  display: block;
+  overflow-x: auto;
+  background: transparent;
+  color: var(--foreground);
+}
+
+/* Comments - muted but readable */
+.hljs-comment,
+.hljs-quote {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Keywords & Built-ins - bold main accent */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-addition {
+  color: var(--main);
+  font-weight: 600;
+}
+
+/* Strings - teal accent */
+.hljs-string,
+.hljs-doctag,
+.hljs-regexp,
+.hljs-template-variable,
+.hljs-template-tag {
+  color: #0d9488;
+}
+
+.dark .hljs-string,
+.dark .hljs-doctag,
+.dark .hljs-regexp,
+.dark .hljs-template-variable,
+.dark .hljs-template-tag {
+  color: #2dd4bf;
+}
+
+/* Numbers & Literals - purple accent */
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-link {
+  color: #9333ea;
+}
+
+.dark .hljs-number,
+.dark .hljs-literal,
+.dark .hljs-variable,
+.dark .hljs-link {
+  color: #c084fc;
+}
+
+/* Functions & Methods - pink accent */
+.hljs-title,
+.hljs-section,
+.hljs-name {
+  color: #db2777;
+  font-weight: 600;
+}
+
+.dark .hljs-title,
+.dark .hljs-section,
+.dark .hljs-name {
+  color: #f472b6;
+}
+
+/* Types & Classes - blue accent */
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-built_in {
+  color: #2563eb;
+}
+
+.dark .hljs-type,
+.dark .hljs-class .hljs-title,
+.dark .hljs-built_in {
+  color: #60a5fa;
+}
+
+/* Attributes & Properties */
+.hljs-attribute,
+.hljs-attr {
+  color: #ea580c;
+}
+
+.dark .hljs-attribute,
+.dark .hljs-attr {
+  color: #fb923c;
+}
+
+/* Tags (HTML/XML) */
+.hljs-tag {
+  color: var(--foreground);
+}
+
+.hljs-tag .hljs-name {
+  color: var(--main);
+  font-weight: 600;
+}
+
+.hljs-tag .hljs-attr {
+  color: #ea580c;
+}
+
+.dark .hljs-tag .hljs-attr {
+  color: #fb923c;
+}
+
+/* Symbols & Bullets */
+.hljs-symbol,
+.hljs-bullet {
+  color: #059669;
+}
+
+.dark .hljs-symbol,
+.dark .hljs-bullet {
+  color: #34d399;
+}
+
+/* Meta & Preprocessor */
+.hljs-meta,
+.hljs-meta .hljs-keyword {
+  color: #64748b;
+}
+
+/* Deletion */
+.hljs-deletion {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* Addition */
+.hljs-addition {
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+}
+
+/* Emphasis */
+.hljs-emphasis {
+  font-style: italic;
+}
+
+/* Strong */
+.hljs-strong {
+  font-weight: 700;
+}
+
+/* Selection in code */
+pre::selection,
+pre *::selection,
+code::selection,
+code *::selection {
+  background: var(--main);
+  color: var(--main-foreground);
+}
+
 .markdown-body {
   padding: 2rem 0;
 }

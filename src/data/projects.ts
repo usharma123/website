@@ -6,6 +6,13 @@ const PROJECTS: {
   liveLink: string
 }[] = [
   {
+    name: 'WASMTerminal',
+    description: 'Linux terminal running entirely client-side using WebAssembly',
+    liveLink: 'https://head.wasmterminal.pages.dev/',
+    previewImage: '/WASM-Terminal.png',
+    repoUrl: 'https://github.com/usharma123/wasmterminal',
+  },
+  {
     name: 'Markov Explorer',
     description: 'Markov Decision Process Visualizer and Optimizer',
     liveLink: 'https://markov-explorer.vercel.app/',

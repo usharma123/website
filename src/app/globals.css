@@ -589,9 +589,18 @@
 .markdown-body h6 {
   margin-top: 2.5rem;
   margin-bottom: 1rem;
+  font-weight: 700;
 }
 
-.markdown-body p,
+.markdown-body p {
+  margin-bottom: 1.25rem;
+  line-height: 1.7;
+}
+
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+
 .markdown-body ul,
 .markdown-body ol,
 .markdown-body pre {

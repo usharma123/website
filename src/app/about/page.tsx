@@ -45,10 +45,10 @@ export default function About() {
           <p>
             I&apos;m a builder at the intersection of{' '}
             <span className="font-semibold bg-[var(--color-accent-yellow)]/80 px-1 border-2 border-[var(--color-border)]">AI</span>,{' '}
-            <span className="font-semibold bg-[var(--color-accent-teal)]/80 px-1 border-2 border-[var(--color-border)]">healthcare</span>, and{' '}
-            <span className="font-semibold">law</span>, passionate about turning complex, manual workflows into smart systems.
+            <span className="font-semibold bg-[var(--color-accent-teal)]/80 px-1 border-2 border-[var(--color-border)]">finance</span>, and{' '}
+            <span className="font-semibold">healthcare</span>, passionate about turning complex, manual workflows into smart systems.
             I co-founded Patent-It AI to streamline patent and legal diligence, cutting hours of work to minutes.
-            With a background in biomedical engineering, AI, and clinical research, I&apos;ve led teams across projects from GAN-based medical imaging to agentic RAG tools for litigation.
+            With a background in biomedical sciences, AI, and clinical research, I&apos;ve led teams across projects from GAN-based medical imaging to agentic RAG tools for litigation.
           </p>
         </div>
 

@@ -7,8 +7,6 @@ tags: ["reinforcement-learning", "web-development", "visualization", "nextjs", "
 
 # Building MarkovExplorer: Visualizing and Optimizing MDPs
 
-&nbsp;
-
 ## Introduction
 
 I watched a recent **[Veritassium](https://www.youtube.com/watch?v=KZeIEiBrT_w&t=487s)** video that inspired me to try to visualize any type of markov chain and this grew as a personal project to make Markov Decision Processes (MDPs) more approachable. While textbooks explain the theory, it can be hard to see how individual transitions and rewards add up. I wanted a tool that lets me build an MDP visually, run simulations, and watch reinforcement-learning algorithms improve a policy in real time. That idea grew into MarkovExplorer, a web application that mixes a drag-and-drop interface with a robust simulation and optimization engine.
@@ -24,8 +22,6 @@ The application focuses on three core tasks:
 3. **Agent Optimization** – A built-in optimizer runs value iteration, policy iteration, Q-learning and Monte Carlo policy search. It compares baseline and optimized policies and even rates the confidence of the results.
 
 On top of that, charts and summaries give deeper insight: histograms for reward distributions, pie charts for terminal states and transition-frequency analyses, all generated in real time. An AI-powered interpreter highlights interesting trends or potential issues in the results.
-
-&nbsp;
 
 ## Building the Application
 
@@ -47,8 +43,6 @@ src/
 - **Zod** for runtime validation.
 - **vis-network** to render the MDP graph.
 
-&nbsp;
-
 ### Simulation Engine
 
 The simulation lives in `lib/sim.ts`. It executes episodic Monte Carlo runs with configurable parameters such as episode count, maximum steps and starting state. During each run it tracks:
@@ -60,8 +54,6 @@ The simulation lives in `lib/sim.ts`. It executes episodic Monte Carlo runs with
 
 The results feed the charts and statistics in the UI.
 
-&nbsp;
-
 ### Optimization Engine
 
 The optimizer (`lib/optimizer.ts`) tries multiple strategies automatically:
@@ -72,13 +64,9 @@ The optimizer (`lib/optimizer.ts`) tries multiple strategies automatically:
 
 Each method is validated by running fresh simulations, and the best policy is presented with a confidence score. The UI component `AgentOptimizer.tsx` shows the step-by-step progress and final evaluation.
 
-&nbsp;
-
 ### User Experience
 
 Everything revolves around feedback. The interface highlights configuration errors immediately, updates charts live and keeps controls responsive on mobile screens. Saving and loading presets makes experimentation quick, and the 3D graph view gives a tangible sense of navigating a state space.
-
-&nbsp;
 
 ## Lessons Learned
 
@@ -86,13 +74,9 @@ Everything revolves around feedback. The interface highlights configuration erro
 - **Validation is key** – Running Monte Carlo tests after theoretical optimization prevents overfitting to the model.
 - **TypeScript + Zod** – Static and runtime type checks eliminated whole classes of bugs early.
 
-&nbsp;
-
 ## What's Next
 
-The roadmap includes gap minimization to better align theoretical and empirical results, export/import of models and richer policy comparison tools. Eventually I'd like to support multi-objective optimization and advanced visualizations such as animated 3D trajectories. 
-
-&nbsp;
+The roadmap includes gap minimization to better align theoretical and empirical results, export/import of models and richer policy comparison tools. Eventually I'd like to support multi-objective optimization and advanced visualizations such as animated 3D trajectories.
 
 ---
 

@@ -7,12 +7,7 @@ tags: ["nextjs", "portfolio", "blog", "neobrutalism", "tutorial"]
 
 # Building My Portfolio & Blog with Next.js and Neobrutalism
 
-
-&nbsp;
-
 Welcome to my first blog post! In this post, I'll document the process of building my personal portfolio and blog using [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.com/), and the [neobrutalism-templates/portfolio](https://github.com/neobrutalism-templates/portfolio) and [neobrutalism-templates/blog](https://github.com/neobrutalism-templates/blog) as inspiration.
-
-&nbsp;
 
 ## 1. Project Setup
 
@@ -55,8 +50,6 @@ export default function BlogPage() {
 ```
 
 Each post is a markdown file in `src/content/posts/` with frontmatter for title, date, and tags.
-
-&nbsp;
 
 ## 4. Rendering Markdown with Code
 
@@ -141,23 +134,11 @@ I used a flex layout to place my avatar to the left of my introduction:
 
 ## 8. Final Thoughts
 
-<br />
+I recently started learning **Next.js**, and this is my first attempt at building a simple portfolio site. I wrote everything in **MDX/Markdown** so I could easily include code snippets. For the design, I went with a **neobrutalist** style for a bold, minimal look, and added **Framer Motion** animations to make the site feel more dynamic and engaging. Honestly, it wasn't as hard as I thought!
 
-I recently started learning **Next.js**, and this is my first attempt at building a simple portfolio site. I wrote everything in **MDX/Markdown** so I could easily include code snippets. For the design, I went with a **neobrutalist** style for a bold, minimal look, and added **Framer Motion** animations to make the site feel more dynamic and engaging. Honestly, it wasn’t as hard as I thought!
-
-<br />
-
-<br />
-
-## 9. What’s Next?
-
-<br />
+## 9. What's Next?
 
 I'm planning to use this site as a personal journal to document what I learn throughout my Masters, as well as to share mini data projects I work on. One of my goals is to create a **Markov process** calculator and visualizer.
-
-<br />
-
-<br />
 
 ---
 

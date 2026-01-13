@@ -10,6 +10,7 @@ import {
   SiPostgresql,
   SiDocker,
   SiPython,
+  SiJava,
 } from '@icons-pack/react-simple-icons'
 import { Cloud, LucideIcon } from 'lucide-react'
 
@@ -33,6 +34,7 @@ const SKILLS: { field: string; skills: { skill: string; icon: SkillIcon }[] }[] 
       { skill: 'nodejs', icon: SiNodedotjs },
       { skill: 'postgresql', icon: SiPostgresql },
       { skill: 'python', icon: SiPython },
+      { skill: 'java', icon: SiJava },
       { skill: 'docker', icon: SiDocker },
       { skill: 'aws', icon: Cloud },
     ],

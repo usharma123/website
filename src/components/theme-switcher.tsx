@@ -20,19 +20,18 @@ export function ThemeSwitcher() {
   }
 
   const isDark = resolvedTheme === 'dark'
-
+  
   return (
     <motion.button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="relative w-11 h-11 rounded-[var(--radius-base)] p-2 border-3 border-[var(--color-border)] bg-[var(--color-secondary-background)] shadow-[3px_3px_0_0_var(--border)] hover:bg-[var(--color-accent-yellow)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-main)] overflow-hidden transition-colors"
+      className="relative w-11 h-11 rounded-[var(--radius-base)] p-2 border-3 border-[var(--color-border)] bg-[var(--color-secondary-background)] hover:bg-[var(--color-accent-yellow)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-main)] overflow-hidden transition-colors"
       whileHover={{
         scale: 1.08,
-        boxShadow: '5px 5px 0 0 var(--border)',
+        ...(!isDark && { boxShadow: '5px 5px 0 0 var(--border)' }),
       }}
       whileTap={{
         scale: 0.9,
         rotate: 15,
-        boxShadow: '0 0 0 0 var(--border)',
       }}
       transition={{ type: 'spring', stiffness: 400, damping: 17 }}
     >

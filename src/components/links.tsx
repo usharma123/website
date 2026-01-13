@@ -68,12 +68,14 @@ export default function Links() {
     >
       {links.map((link, id) => {
         const Icon = link.icon
+        const isExternal = link.href.startsWith('http')
         return (
           <motion.a
             key={id}
             variants={itemVariants}
-            target="_blank"
             href={link.href}
+            target={isExternal ? '_blank' : undefined}
+            rel={isExternal ? 'noopener noreferrer' : undefined}
             className="group relative p-4 border-4 border-[var(--color-border)] bg-[var(--color-secondary-background)] shadow-[6px_6px_0px_0px_var(--border)] transition-all overflow-hidden"
             whileHover={{
               x: -4,

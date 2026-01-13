@@ -100,7 +100,7 @@ export default function Skills() {
                         <skill.icon className="h-7 w-7 sm:h-8 sm:w-8 transition-colors" />
                       </motion.div>
                     </TooltipTrigger>
-                    <TooltipContent className="font-heading font-semibold border-3 border-[var(--color-border)] bg-[var(--color-secondary-background)] shadow-[3px_3px_0_0_var(--border)]">
+                    <TooltipContent className="font-heading font-semibold border-3 border-[var(--color-border)] bg-[var(--color-secondary-background)] text-[var(--color-foreground)] shadow-[3px_3px_0_0_var(--border)]">
                       {skill.skill}
                     </TooltipContent>
                   </Tooltip>
@@ -139,7 +139,7 @@ export default function Skills() {
                         <skill.icon className="h-7 w-7 sm:h-8 sm:w-8 transition-colors" />
                       </motion.div>
                     </TooltipTrigger>
-                    <TooltipContent className="font-heading font-semibold border-3 border-[var(--color-border)] bg-[var(--color-secondary-background)] shadow-[3px_3px_0_0_var(--border)]">
+                    <TooltipContent className="font-heading font-semibold border-3 border-[var(--color-border)] bg-[var(--color-secondary-background)] text-[var(--color-foreground)] shadow-[3px_3px_0_0_var(--border)]">
                       {skill.skill}
                     </TooltipContent>
                   </Tooltip>

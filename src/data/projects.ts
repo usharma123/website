@@ -26,6 +26,13 @@ const PROJECTS: {
     previewImage: '/ever-after.png',
     repoUrl: 'https://github.com/usharma123/EverAfter',
   },
+  {
+    name: 'MSAR Matchfinder',
+    description: 'Medical school matching tool for MD schools based on GPA and MCAT scores',
+    liveLink: 'https://medmatcher.vercel.app/',
+    previewImage: '/MSAR.png',
+    repoUrl: 'https://github.com/usharma123/MSAR',
+  },
 ]
 
 export default PROJECTS

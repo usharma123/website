@@ -1,62 +1,124 @@
-<img src="public/preview.png" />
+# Portfolio Website
 
-# Portfolio
+A modern, neobrutalism-styled portfolio website built with Next.js, showcasing projects, blog posts, and professional experience.
 
-Portfolio is a neobrutalism-styled nextjs tailwind template for portfolios.
+## Features
 
-## Get started
+- **Home Page**: Animated hero section with personal introduction and social links
+- **About Page**: Professional experience timeline and skills showcase
+- **Work Page**: Interactive project gallery with preview images and links
+- **Blog**: MDX-powered blog with syntax highlighting
+- **Dark Mode**: Theme switching with smooth transitions
+- **Animations**: Smooth page transitions and interactive elements powered by Framer Motion
+- **Responsive Design**: Mobile-first design that works across all devices
 
-[Create a new repo](https://github.com/neobrutalism-templates/portfolio/generate) from this template.
+## Tech Stack
 
-### Installation
+- **Framework**: [Next.js 16](https://nextjs.org/) with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS with custom neobrutalism design system
+- **Animations**: Framer Motion
+- **UI Components**: Radix UI primitives
+- **Content**: MDX for blog posts with gray-matter
+- **Syntax Highlighting**: Highlight.js with rehype-highlight
+- **Theme Management**: next-themes
+- **Icons**: Lucide React & React Simple Icons
 
-This template uses `pnpm` package manager so make sure you have it installed.
+## Installation
 
-To install all dependencies run:
+This project uses `pnpm` as the package manager. Make sure you have it installed.
 
 ```bash
-pnpm i
+# Install dependencies
+pnpm install
+
+# Run development server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Start production server
+pnpm start
+
+# Run linter
+pnpm lint
 ```
 
-To run the app locally:
+## Project Structure
 
-```bash
-pnpm run dev
+```
+src/
+├── app/                    # Next.js app router pages
+│   ├── about/             # About page with experience & skills
+│   ├── blog/              # Blog listing and individual posts
+│   ├── work/               # Projects showcase page
+│   └── page.tsx           # Home page
+├── components/             # React components
+│   ├── motion/            # Animation components
+│   ├── sections/          # Page sections (experience, skills)
+│   └── ui/                # Reusable UI components
+├── content/               # MDX blog posts
+│   └── posts/
+├── data/                  # Static data files
+│   ├── experience.ts      # Work experience data
+│   ├── projects.ts        # Project data
+│   └── skills.ts          # Skills data
+└── lib/                   # Utility functions
 ```
 
-### Config
+## Configuration
 
-- Inside `layout.tsx` update the metadata
-- Inside `page.tsx` update the content
-- Update the `favicon.ico`
+### Metadata
 
-### Content config
+Update site metadata in `src/app/layout.tsx`:
+- Site title and description
+- Open Graph tags
+- Favicon
 
-#### Links on the home page
+### Content Updates
 
-To update the links on the home page go to `src/components/links.tsx` and inside `links` array add or remove objects. Each object has 2 properties, `icon`, and `href`. `href` is self-explanatory, and inside `icon` you'll put an icon imported from `@icons-pack/react-simple-icons`. Visit [simpleicons.org](https://simpleicons.org/) to see all the icons. Import them by adding `Si` prefix to their name as I imported them in `links` component.
+#### Social Links
+Edit `src/components/links.tsx` to update social media links. Icons are imported from `@icons-pack/react-simple-icons` with the `Si` prefix.
 
-#### Updating the rest of the content
+#### Projects
+Update project information in `src/data/projects.ts`. For preview images:
+- Place images in the `public/` folder
+- Reference them as `/image-name.png` in the `previewImage` field
+- Default aspect ratio is `71/26` (can be adjusted in `src/app/work/page.tsx`)
 
-Inside `data` folder you have the rest of the content you can edit.
+#### Experience & Skills
+- Experience timeline: `src/data/experience.ts`
+- Skills showcase: `src/data/skills.ts`
 
-#### Updating the `previewImage` in `projects.ts`
-
-Make sure to put `/` + name of the picture that's inside public folder. e.g. you have a `my-project.png` picture inside `public` folder, you'll type:
-
-```ts
-previewImage: '/my-project.png'
-```
-
-##### Image aspect ratio
-
-Inside `app/work/page.tsx` `previewImage` is wrapped inside AspectRatio component. Change the `ratio` prop so it suits your needs (default preview images are 710 x 260, so I set the ratio to be `71 / 26`).
-
-#### Updating skills
-
-I need to clarify how to edit skills since it looks confusing at first. Inside the `skills.ts` inside the `SKILLS` array, each object in the array is a field of skills (can be anything: frontend, backend, devops, design etc). Each object has a `field` prop which is the field name. Also, each object has a `skills` array where each array member has a `skill` value (used as tooltip value), and `icon` is the icon that will be displayed.
-You update them the same way you'd update links on the home page.
+#### Blog Posts
+- Create new posts in `src/content/posts/` as `.md` files
+- Use frontmatter for metadata:
+  ```markdown
+  ---
+  title: "Post Title"
+  description: "Post description"
+  pubDate: "2024-01-01"
+  tags: ["tag1", "tag2"]
+  ---
+  ```
 
 ### Styling
 
-To change the styling visit [styling docs](https://neobrutalism.dev/styling), and copy the desired styling to your css like it's shown in the styling docs.
+The design uses a neobrutalism style with custom CSS variables defined in `src/app/globals.css`. To customize:
+- Color scheme: Update CSS variables in `globals.css`
+- Component styles: Modify Tailwind classes in components
+- For more styling options, visit [neobrutalism.dev/styling](https://neobrutalism.dev/styling)
+
+## Design System
+
+The website uses a custom neobrutalism design system with:
+- Bold borders and shadows
+- Vibrant accent colors
+- Geometric shapes and decorations
+- Smooth animations and interactions
+- Custom typography with heading and base font families
+
+## License
+
+See [LICENSE](LICENSE) file for details.

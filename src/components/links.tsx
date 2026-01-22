@@ -17,7 +17,7 @@ export default function Links() {
   const links: LinkItem[] = [
     {
       icon: SiGmail,
-      href: 'mailto:utsav1@seas.upenn.edu',
+      href: 'https://mail.google.com/mail/?view=cm&to=utsav1@seas.upenn.edu',
       label: 'Email',
       color: 'var(--accent-yellow)',
     },
@@ -68,19 +68,13 @@ export default function Links() {
     >
       {links.map((link, id) => {
         const Icon = link.icon
-        const isExternal = link.href.startsWith('http')
-        const isMailto = link.href.startsWith('mailto:')
         return (
           <motion.a
             key={id}
             variants={itemVariants}
             href={link.href}
-            onClick={isMailto ? (e) => {
-              e.preventDefault()
-              window.location.href = link.href
-            } : undefined}
-            target={isExternal ? '_blank' : undefined}
-            rel={isExternal ? 'noopener noreferrer' : undefined}
+            target="_blank"
+            rel="noopener noreferrer"
             className="group relative p-4 border-4 border-[var(--color-border)] bg-[var(--color-secondary-background)] shadow-[6px_6px_0px_0px_var(--border)] transition-all overflow-hidden"
             whileHover={{
               x: -4,

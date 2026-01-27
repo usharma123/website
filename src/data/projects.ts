@@ -33,6 +33,13 @@ const PROJECTS: {
     previewImage: '/MSAR.png',
     repoUrl: 'https://github.com/usharma123/MSAR',
   },
+  {
+    name: 'UI-tester',
+    description: 'AI-powered terminal UI that tests websites using browser automation and LLM analysis',
+    liveLink: 'https://ui-tester.dev',
+    previewImage: '/UI-tester.png',
+    repoUrl: 'https://github.com/usharma123/UI-tester-',
+  },
 ]
 
 export default PROJECTS

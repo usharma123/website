@@ -12,6 +12,7 @@ import {
   SiPython,
   SiOpenjdk,
   SiRust,
+  SiSolid,
 } from '@icons-pack/react-simple-icons'
 import { Cloud, LucideIcon } from 'lucide-react'
 
@@ -28,6 +29,7 @@ const SKILLS: {
       { skill: 'css', icon: SiCss },
       { skill: 'javascript', icon: SiJavascript },
       { skill: 'react', icon: SiReact },
+      { skill: 'solidjs', icon: SiSolid },
       { skill: 'tailwind', icon: SiTailwindcss },
       { skill: 'nextjs', icon: SiNextdotjs },
     ],

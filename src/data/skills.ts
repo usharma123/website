@@ -11,12 +11,16 @@ import {
   SiDocker,
   SiPython,
   SiOpenjdk,
+  SiRust,
 } from '@icons-pack/react-simple-icons'
 import { Cloud, LucideIcon } from 'lucide-react'
 
 type SkillIcon = IconType | LucideIcon
 
-const SKILLS: { field: string; skills: { skill: string; icon: SkillIcon }[] }[] = [
+const SKILLS: {
+  field: string
+  skills: { skill: string; icon: SkillIcon }[]
+}[] = [
   {
     field: 'Frontend',
     skills: [
@@ -32,9 +36,10 @@ const SKILLS: { field: string; skills: { skill: string; icon: SkillIcon }[] }[] 
     field: 'Backend',
     skills: [
       { skill: 'nodejs', icon: SiNodedotjs },
-      { skill: 'postgresql', icon: SiPostgresql },
       { skill: 'python', icon: SiPython },
       { skill: 'java', icon: SiOpenjdk },
+      { skill: 'rust', icon: SiRust },
+      { skill: 'postgresql', icon: SiPostgresql },
       { skill: 'docker', icon: SiDocker },
       { skill: 'aws', icon: Cloud },
     ],

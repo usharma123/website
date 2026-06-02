@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import rehypeHighlight from 'rehype-highlight';
+import remarkGfm from 'remark-gfm';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import BlogPostClient from "./BlogPostClient";
 import CopyCodeBlock from "@/components/CopyCodeBlock";
@@ -30,6 +31,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       source={content}
       options={{
         mdxOptions: {
+          remarkPlugins: [remarkGfm],
           rehypePlugins: [rehypeHighlight],
         },
       }}

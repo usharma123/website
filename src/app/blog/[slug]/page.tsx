@@ -37,6 +37,11 @@ export default async function BlogPostPage({ params }: PageProps) {
       }}
       components={{
         pre: CopyCodeBlock,
+        table: (props) => (
+          <div className="markdown-table-wrap">
+            <table {...props} />
+          </div>
+        ),
       }}
     />
   );

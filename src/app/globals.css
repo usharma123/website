@@ -607,6 +607,62 @@
   margin-bottom: 1.5rem;
 }
 
+/* Markdown tables (GFM) */
+.markdown-table-wrap {
+  margin: 1.5rem 0 2rem;
+  overflow-x: auto;
+  border: 3px solid var(--border);
+  box-shadow: var(--shadow);
+  background: var(--secondary-background);
+  -webkit-overflow-scrolling: touch;
+}
+
+.markdown-body table {
+  width: 100%;
+  min-width: 28rem;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.markdown-body thead th {
+  background: var(--accent-yellow);
+  color: var(--foreground);
+  font-weight: 700;
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 3px solid var(--border);
+  white-space: nowrap;
+}
+
+.markdown-body tbody td {
+  padding: 0.65rem 0.85rem;
+  vertical-align: top;
+  border-bottom: 2px solid var(--border);
+}
+
+.markdown-body tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown-body tbody tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--background) 40%, var(--secondary-background));
+}
+
+.markdown-body table code {
+  font-size: 0.82em;
+  padding: 0.1em 0.35em;
+  white-space: nowrap;
+}
+
+.markdown-body tbody td:last-child {
+  word-break: break-word;
+}
+
+.markdown-body tbody td:last-child code {
+  white-space: normal;
+}
+
 /* Block code */
 pre {
   background: var(--accent-yellow);

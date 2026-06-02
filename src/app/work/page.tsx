@@ -142,14 +142,18 @@ export default function Work() {
                 </p>
 
                 {/* Action Buttons */}
-                <div className="mt-6 grid grid-cols-2 gap-3">
-                  <MagneticButton
-                    href={project.liveLink}
-                    target="_blank"
-                    className="relative border-3 border-[var(--color-border)] bg-[var(--color-secondary-background)] text-[var(--color-foreground)] shadow-[4px_4px_0px_0px_var(--border)] font-heading font-semibold cursor-pointer px-4 py-2.5 text-center text-sm hover:bg-[var(--color-accent-yellow)] hover:shadow-[6px_6px_0px_0px_var(--border)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all overflow-hidden"
-                  >
-                    <span className="relative z-10">Visit</span>
-                  </MagneticButton>
+                <div
+                  className={`mt-6 grid gap-3 ${project.liveLink ? 'grid-cols-2' : 'grid-cols-1'}`}
+                >
+                  {project.liveLink && (
+                    <MagneticButton
+                      href={project.liveLink}
+                      target="_blank"
+                      className="relative border-3 border-[var(--color-border)] bg-[var(--color-secondary-background)] text-[var(--color-foreground)] shadow-[4px_4px_0px_0px_var(--border)] font-heading font-semibold cursor-pointer px-4 py-2.5 text-center text-sm hover:bg-[var(--color-accent-yellow)] hover:shadow-[6px_6px_0px_0px_var(--border)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all overflow-hidden"
+                    >
+                      <span className="relative z-10">Visit</span>
+                    </MagneticButton>
+                  )}
                   <MagneticButton
                     href={project.repoUrl}
                     target="_blank"

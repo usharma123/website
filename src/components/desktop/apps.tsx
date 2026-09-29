@@ -145,7 +145,7 @@ const ICONS: Record<IconName, React.ReactNode> = {
   folder: (
     <>
       <path d="M4 11h14l4 5h22v26H4z" className={`fill-accent ${S}`} />
-      <path d="M4 19h40v23H4z" className={`fill-[#3f8f71] ${S}`} />
+      <path d="M4 19h40v23H4z" className={`fill-[#4a78c2] ${S}`} />
     </>
   ),
   notebook: (

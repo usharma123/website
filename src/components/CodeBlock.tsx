@@ -15,7 +15,7 @@ export default function CodeBlock(props: ComponentProps<'pre'>) {
           setCopied(true)
           setTimeout(() => setCopied(false), 1200)
         }}
-        className="bg-ink absolute top-2 right-2 rounded border border-[#4a5750] px-2 py-0.5 font-mono text-[11px] text-[#e6ede7] opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+        className="bg-ink absolute top-2 right-2 rounded border border-[#3a4558] px-2 py-0.5 font-mono text-[11px] text-[#e6ebf2] opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
       >
         {copied ? 'copied' : 'copy'}
       </button>

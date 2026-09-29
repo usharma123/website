@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  useEffect,
   useRef,
   type CSSProperties,
   type PointerEvent,
@@ -37,6 +38,12 @@ export default function Window({
   children,
 }: Props) {
   const ref = useRef<HTMLElement>(null)
+
+  // Coming to the front hands the keyboard to the window's main input.
+  useEffect(() => {
+    if (focused)
+      ref.current?.querySelector<HTMLElement>('[data-autofocus]')?.focus()
+  }, [focused, win.z])
 
   // Drags and resizes write straight to the element and only commit to
   // state on release, so window contents don't re-render on every move.

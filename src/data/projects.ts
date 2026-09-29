@@ -20,7 +20,7 @@ const PROJECTS: Project[] = [
       'Linux terminal running entirely client-side using WebAssembly',
     kind: 'terminal',
     liveLink: 'https://head.wasmterminal.pages.dev/',
-    screenshot: '/WASM-Terminal.png',
+    screenshot: '/wasmterminal-shot.png',
     repoUrl: 'https://github.com/usharma123/wasmterminal',
     post: 'wasm-terminal',
     featured: true,

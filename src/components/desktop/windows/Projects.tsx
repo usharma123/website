@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import PROJECTS, { type Project } from '@/data/projects'
 import { useDesktop } from '../Desktop'
+import { MOCKS, Scaled } from '../mocks'
 import { Toolbar } from '../Window'
 
 const KINDS: { id: Project['kind'] | 'all'; label: string }[] = [
@@ -135,8 +136,8 @@ export default function Projects() {
   )
 }
 
-/** Real screenshot if there is one; otherwise a typeset card, which beats
- *  a fake one. */
+/** Real screenshot if there is one, then a generated mock of the tool, then
+ *  a typeset card as a last resort. */
 export function Preview({
   project,
   tall,
@@ -145,6 +146,14 @@ export function Preview({
   tall?: boolean
 }) {
   const h = tall ? 'h-[240px]' : 'h-[140px]'
+  const Mock = MOCKS[project.slug]
+  if (Mock && !project.screenshot) {
+    return (
+      <Scaled className={h}>
+        <Mock />
+      </Scaled>
+    )
+  }
   if (project.screenshot) {
     return (
       <img

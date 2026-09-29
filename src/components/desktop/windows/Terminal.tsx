@@ -2,225 +2,261 @@
 
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
   type KeyboardEvent,
   type ReactNode,
 } from 'react'
 
-import EXPERIENCE from '@/data/experience'
-import PROJECTS from '@/data/projects'
-import { PROFILE } from '@/data/resume'
-import { APPS, DESKTOP_APPS, type AppId } from '../apps'
 import { useDesktop } from '../context'
+import { buildFs, displayPath } from '../terminal/fs'
+import {
+  complete,
+  execute,
+  type ShellEnv,
+  type ShellState,
+} from '../terminal/shell'
 
-type Line = { id: number; input?: string; output?: ReactNode }
-type Ctx = ReturnType<typeof useDesktop>
+type Line = { id: number; cwd?: string[]; input?: string; output?: ReactNode }
 
-const PROMPT = 'utsav@desk ~ %'
-const dim = (s: ReactNode) => <span className="text-[#7f8a9c]">{s}</span>
+const HISTORY_KEY = 'guest-sh:history'
+const LOGIN_KEY = 'guest-sh:last-login'
+const HOME: ShellState = { cwd: [], prev: [] }
 
-const COMMANDS: Record<
-  string,
-  { help: string; run: (args: string[], d: Ctx) => ReactNode | 'clear' }
-> = {
-  help: {
-    help: 'this list',
-    run: () => (
-      <div className="grid grid-cols-[10ch_1fr] gap-x-3">
-        {Object.entries(COMMANDS).map(([name, c]) => (
-          <div key={name} className="contents">
-            <span className="text-marker">{name}</span>
-            {dim(c.help)}
-          </div>
-        ))}
-      </div>
-    ),
-  },
-  ls: {
-    help: 'what’s on the desktop',
-    run: () => (
-      <div className="flex flex-wrap gap-x-6">
-        {DESKTOP_APPS.map((id) => (
-          <span key={id}>{APPS[id].label}</span>
-        ))}
-      </div>
-    ),
-  },
-  open: {
-    help: 'open <app | project | post>',
-    run: ([target], d) => {
-      if (!target) return dim('usage: open <name> — try `ls` or `projects`')
-      const q = target.toLowerCase()
-      const app = DESKTOP_APPS.find(
-        (id) => id === q || APPS[id].label?.toLowerCase().startsWith(q),
-      )
-      if (app) return (d.open(app as AppId), dim(`opening ${APPS[app].label}…`))
-      const project = PROJECTS.find(
-        (p) => p.slug.startsWith(q) || p.name.toLowerCase().startsWith(q),
-      )
-      if (project)
-        return (d.openProject(project.slug), dim(`opening ${project.name}…`))
-      const post = d.posts.find((p) => p.slug.startsWith(q))
-      if (post) return (d.openPost(post.slug), dim(`opening “${post.title}”…`))
-      return dim(`open: nothing called “${target}”`)
-    },
-  },
-  projects: {
-    help: 'list projects',
-    run: () => (
-      <div className="grid grid-cols-[22ch_1fr] gap-x-3">
-        {PROJECTS.map((p) => (
-          <div key={p.slug} className="contents">
-            <span className="text-marker">{p.slug}</span>
-            {dim(p.description)}
-          </div>
-        ))}
-        <div className="col-span-2 mt-1">
-          {dim('`open <name>` for details')}
-        </div>
-      </div>
-    ),
-  },
-  posts: {
-    help: 'list blog posts',
-    run: (_, d) => (
-      <div>
-        {d.posts.map((p) => (
-          <div key={p.slug}>
-            {dim(p.pubDate)} <span className="text-marker">{p.slug}</span>
-          </div>
-        ))}
-      </div>
-    ),
-  },
-  whoami: {
-    help: 'the short version',
-    run: () => (
-      <div>
-        <div className="font-semibold">{PROFILE.name}</div>
-        <div>{PROFILE.headline}</div>
-        {dim(
-          `previously: ${EXPERIENCE.slice(1, 3)
-            .map((r) => `${r.role}, ${r.company}`)
-            .join('; ')}`,
-        )}
-      </div>
-    ),
-  },
-  contact: {
-    help: 'email and links',
-    run: () => (
-      <div>
-        <div>{PROFILE.email}</div>
-        <div>{PROFILE.github}</div>
-        <div>{PROFILE.linkedin}</div>
-      </div>
-    ),
-  },
-  clear: { help: 'clear the screen', run: () => 'clear' },
-  exit: {
-    help: 'close this window',
-    run: (_, d) => {
-      d.close('terminal')
-      return null
-    },
-  },
+function Prompt({ cwd }: { cwd: string[] }) {
+  return (
+    <span className="shrink-0 whitespace-pre">
+      <span className="text-[#7fd1a4]">guest@utsav</span>{' '}
+      <span className="text-[#9cc0ff]">{displayPath(cwd)}</span>
+      <span className="text-[#7f8a9c]"> % </span>
+    </span>
+  )
 }
 
 export default function Terminal() {
   const desktop = useDesktop()
-  const [lines, setLines] = useState<Line[]>([
-    {
-      id: 0,
-      output: dim(
-        'Every window on this desktop can be opened from here. Type `help`.',
-      ),
-    },
-  ])
+  const [lines, setLines] = useState<Line[]>([])
   const [value, setValue] = useState('')
-  const [history, setHistory] = useState<string[]>([])
-  const [cursor, setCursor] = useState(-1)
-  const nextId = useRef(1)
+  const [shell, setShell] = useState<ShellState>(HOME)
+
+  // History and counters never render directly, so they live in refs.
+  const history = useRef<string[]>([])
+  const cursor = useRef(-1)
+  const draft = useRef('')
+  const nextId = useRef(0)
+  const shellRef = useRef(shell)
+  const submitRef = useRef<(cmd: string) => void>(() => {})
   const input = useRef<HTMLInputElement>(null)
   const end = useRef<HTMLDivElement>(null)
+  const screen = useRef<HTMLDivElement>(null)
+
+  // Clicking anywhere focuses the prompt, unless you're selecting text to
+  // copy. Keyboard users already land in the input, so this is mouse-only.
+  useEffect(() => {
+    const el = screen.current
+    if (!el) return
+    const onUp = () => {
+      if (!window.getSelection()?.toString()) input.current?.focus()
+    }
+    el.addEventListener('mouseup', onUp)
+    return () => el.removeEventListener('mouseup', onUp)
+  }, [])
+
+  const root = useMemo(() => buildFs(desktop.posts), [desktop.posts])
+
+  // Clickable output from earlier commands calls back through a ref, so old
+  // lines always run against the shell's current state.
+  const env = useMemo<ShellEnv>(
+    () => ({
+      desktop,
+      root,
+      history: [],
+      run: (cmd) => submitRef.current(cmd),
+    }),
+    [desktop, root],
+  )
+
+  function push(line: Omit<Line, 'id'>) {
+    const id = nextId.current++
+    setLines((l) => [...l, { ...line, id }])
+  }
+
+  function submit(raw: string) {
+    const current = shellRef.current
+    if (raw.trim()) {
+      history.current = [
+        raw,
+        ...history.current.filter((h) => h !== raw),
+      ].slice(0, 100)
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history.current))
+    }
+    cursor.current = -1
+    const res = execute(raw, current, { ...env, history: history.current })
+    if (res.clear) {
+      setLines([])
+      if (res.out) push({ output: res.out })
+    } else push({ cwd: current.cwd, input: raw, output: res.out })
+    shellRef.current = res.state
+    setShell(res.state)
+  }
 
   useEffect(() => {
-    input.current?.focus()
+    submitRef.current = submit
+  })
+
+  // A real shell greets you with your last login, so this one does too.
+  useEffect(() => {
+    try {
+      history.current = JSON.parse(localStorage.getItem(HISTORY_KEY) ?? '[]')
+    } catch {
+      history.current = []
+    }
+    const last = localStorage.getItem(LOGIN_KEY)
+    localStorage.setItem(LOGIN_KEY, new Date().toISOString())
+    const when = last
+      ? new Date(last).toLocaleString(undefined, {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : null
+    const id = nextId.current++
+    setLines([
+      {
+        id,
+        output: (
+          <div className="text-[#7f8a9c]">
+            <div>
+              {when
+                ? `Last login: ${when} on ttys001`
+                : 'First login. Welcome, guest.'}
+            </div>
+            <div className="mt-1 text-[#e6ebf2]">
+              Try <span className="text-[#7fd1a4]">ls</span>,{' '}
+              <span className="text-[#7fd1a4]">cat README.md</span>, or just ask
+              — “what are you working on?”
+            </div>
+          </div>
+        ),
+      },
+    ])
   }, [])
+
   useEffect(() => {
     end.current?.scrollIntoView({ block: 'end' })
   }, [lines])
 
-  function run(raw: string) {
-    const [name = '', ...args] = raw.trim().split(/\s+/)
-    if (raw.trim()) setHistory((h) => [raw, ...h])
-    setCursor(-1)
-    const cmd = COMMANDS[name.toLowerCase()]
-    const output = !name
-      ? null
-      : cmd
-        ? cmd.run(args, desktop)
-        : name === 'sudo'
-          ? dim('Nice try.')
-          : dim(`zsh: command not found: ${name}`)
-    if (output === 'clear') return setLines([])
-    setLines((l) => [...l, { id: nextId.current++, input: raw, output }])
-  }
+  // Fish-style suggestion: the most recent matching command, else the single
+  // tab completion, shown dimmed after the cursor.
+  const ghost = useMemo(() => {
+    if (!value.trim()) return ''
+    const fromHistory = history.current.find(
+      (h) => h.startsWith(value) && h !== value,
+    )
+    if (fromHistory) return fromHistory.slice(value.length)
+    const c = complete(value, shell, root)
+    return c.options.length === 0 && c.value.startsWith(value)
+      ? c.value.slice(value.length).trimEnd()
+      : ''
+  }, [value, shell, root])
 
   function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    const atEnd = e.currentTarget.selectionStart === value.length
+
     if (e.key === 'Enter') {
-      run(value)
+      e.preventDefault()
+      submit(value)
       setValue('')
     } else if (e.key === 'Tab') {
       e.preventDefault()
-      const hit = Object.keys(COMMANDS).find(
-        (c) => value && c.startsWith(value),
-      )
-      if (hit) setValue(`${hit} `)
+      const c = complete(value, shell, root)
+      if (c.options.length > 1)
+        push({
+          output: (
+            <div className="flex flex-wrap gap-x-5 text-[#cdbdff]">
+              {c.options.map((o) => (
+                <span key={o}>{o}</span>
+              ))}
+            </div>
+          ),
+        })
+      setValue(c.value)
+    } else if ((e.key === 'ArrowRight' || e.key === 'End') && atEnd && ghost) {
+      e.preventDefault()
+      setValue((v) => v + ghost)
     } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       e.preventDefault()
+      if (cursor.current === -1) draft.current = value
       const i = Math.max(
         -1,
-        Math.min(cursor + (e.key === 'ArrowUp' ? 1 : -1), history.length - 1),
+        Math.min(
+          cursor.current + (e.key === 'ArrowUp' ? 1 : -1),
+          history.current.length - 1,
+        ),
       )
-      setCursor(i)
-      setValue(i >= 0 ? history[i] : '')
-    } else if (e.key === 'l' && e.ctrlKey) {
+      cursor.current = i
+      setValue(i >= 0 ? history.current[i] : draft.current)
+    } else if (e.ctrlKey && e.key === 'c') {
+      e.preventDefault()
+      push({ cwd: shell.cwd, input: `${value}^C` })
+      setValue('')
+      cursor.current = -1
+    } else if (e.ctrlKey && e.key === 'l') {
       e.preventDefault()
       setLines([])
+    } else if (e.ctrlKey && e.key === 'u') {
+      e.preventDefault()
+      setValue('')
     }
   }
 
   return (
     <div
-      className="bg-ink min-h-full p-4 font-mono text-[13px] leading-relaxed text-[#e6ebf2]"
-      onClick={() => input.current?.focus()}
+      className="bg-ink min-h-full cursor-text p-4 font-mono text-[13px] leading-relaxed text-[#e6ebf2]"
+      ref={screen}
     >
       {lines.map((l) => (
         <div key={l.id} className="mb-2">
-          {l.input !== undefined ? (
-            <div>
-              {dim(PROMPT)} {l.input}
+          {l.input !== undefined && l.cwd ? (
+            <div className="flex">
+              <Prompt cwd={l.cwd} />
+              <span className="break-all whitespace-pre-wrap">{l.input}</span>
             </div>
           ) : null}
           {l.output}
         </div>
       ))}
-      <label className="flex gap-2">
-        {dim(PROMPT)}
-        <input
-          ref={input}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={onKeyDown}
-          aria-label="Terminal input"
-          data-autofocus
-          autoComplete="off"
-          autoCapitalize="off"
-          spellCheck={false}
-          className="caret-marker min-w-0 flex-1 bg-transparent outline-none"
-        />
+
+      <label className="flex">
+        <Prompt cwd={shell.cwd} />
+        <span className="relative min-w-0 flex-1">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 overflow-hidden whitespace-pre"
+          >
+            <span className="invisible">{value}</span>
+            <span className="text-[#7f8a9c]/70">{ghost}</span>
+          </span>
+          <input
+            ref={input}
+            value={value}
+            onChange={(e) => {
+              setValue(e.target.value)
+              cursor.current = -1
+            }}
+            onKeyDown={onKeyDown}
+            aria-label="Terminal input"
+            data-autofocus
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck={false}
+            className="relative w-full bg-transparent caret-[#cdbdff] outline-none"
+          />
+        </span>
       </label>
       <div ref={end} />
     </div>

@@ -1,0 +1,4 @@
+# Supply-chain hardening: wait a week before installing fresh releases, and
+# refuse packages whose provenance or signatures get weaker between versions.
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade

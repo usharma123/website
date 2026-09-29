@@ -23,9 +23,11 @@ Instead of writing brittle test scripts, you just point it at a URL and watch it
 
 The system follows a clean three-stage pipeline:
 
-```
-Planner (LLM) → Executor (Browser) → Judge (LLM)
-```
+| Stage | Input | Output |
+| --- | --- | --- |
+| Planner | Page structure and test goals | A structured test plan |
+| Executor | Planned steps | Browser actions, screenshots, and logs |
+| Judge | Recorded evidence | A scored report with findings |
 
 ### 1. Planner: Understanding Before Testing
 

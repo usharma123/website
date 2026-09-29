@@ -15,9 +15,13 @@ Ask an AI agent to "fix the coverage regression in AuthService" and watch it bur
 
 Instead of letting agents read raw artifacts directly, Packet28 sits between the agent and the repo:
 
-```
-Raw artifacts → Reducers → EnvelopeV1 packets → Daemon cache → Agent
-```
+| Step | Result |
+| --- | --- |
+| Read artifacts | Diffs, coverage, logs, or stack traces |
+| Run reducers | Extract the relevant evidence |
+| Wrap the result | An `EnvelopeV1` packet with cost and provenance |
+| Cache the packet | Persist it for later requests |
+| Return to the agent | Supply evidence within a context budget |
 
 Each packet is wrapped in a universal `EnvelopeV1` schema with token estimates, file/symbol references, provenance (git refs, input paths), and a blake3 hash for deduplication. Agents get structured summaries — not megabyte XML dumps.
 
@@ -29,29 +33,17 @@ The live turn stays cheap. Thicker memory assembly moves out of the worker loop:
 - **`packet28.prepare_handoff`** assembles a denoised handoff packet after threshold or stop boundaries
 - A fresh worker relaunches from that handoff instead of growing the session forever
 
-## Architecture: Four Layers
+## Architecture: Five Layers
 
-Packet28 is a Rust workspace of 25 crates organized into four layers:
+Packet28 is a Rust workspace of 25 crates organized into five layers:
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Agent Surface                            │
-│  packet28-agent wrapper · agent-prompt generator · MCP surface  │
-├─────────────────────────────────────────────────────────────────┤
-│                     CLI + Daemon Layer                          │
-│  Packet28 CLI · packet28d daemon · task/watch/stream protocol   │
-├─────────────────────────────────────────────────────────────────┤
-│                    Context Runtime Layer                        │
-│  kernel · scheduler · memory/recall · assembly · correlation    │
-│  policy/guard · agent state                                     │
-├─────────────────────────────────────────────────────────────────┤
-│                       Reducer Layer                             │
-│  diffy · covy · testy · stacky · buildy · mapy · proxy          │
-├─────────────────────────────────────────────────────────────────┤
-│                     Shared Contracts                            │
-│  EnvelopeV1 · BudgetCost · FileRef/SymbolRef · Provenance       │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Layer | Components |
+| --- | --- |
+| Agent interface | `packet28-agent`, prompt generator, MCP tools |
+| CLI and daemon | `Packet28`, `packet28d`, task and watch protocols |
+| Context runtime | Kernel, scheduler, recall, assembly, policy, agent state |
+| Reducers | `diffy`, `covy`, `testy`, `stacky`, `buildy`, `mapy`, proxy |
+| Shared contracts | `EnvelopeV1`, `BudgetCost`, file and symbol references, provenance |
 
 ### Reducers: Raw Artifacts In, Bounded Packets Out
 
@@ -110,9 +102,9 @@ Assembly (`contextq-core`) merges multiple packets into one bounded context pack
 
 `packet28d` is a Unix socket daemon that holds persistent state, file watchers, task streaming, and command routing:
 
-```
-Agent → Unix socket → packet28d → Kernel / Watchers / Task registry / Cache
-```
+1. The agent sends a request through a Unix socket.
+2. `packet28d` routes it to the kernel, watchers, task registry, or cache.
+3. The daemon returns the result or streams task events to the agent.
 
 File changes debounce and trigger reactive replanning. Tasks stream per-step lifecycle events. The `--via-daemon` flag routes any Packet28 command through the daemon instead of spinning up fresh state each time.
 

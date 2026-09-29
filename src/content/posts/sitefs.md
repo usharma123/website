@@ -21,15 +21,11 @@ The second layer persists everything under `/site`: snapshots, axe results, link
 
 ## Two-Layer Design
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│  Live AX shell          │  Evidence /site                    │
-│  tabs · here · ls · cd  │  snapshots · reports · crawl       │
-│  click · find · grep    │  diffs · viewer-manifest.json      │
-└──────────────────────────────────────────────────────────────┘
-         │                              │
-         └──── Playwright worker ───────┘
-```
+| Layer | Commands or artifacts | Connection |
+| --- | --- | --- |
+| Live accessibility shell | `tabs`, `here`, `ls`, `cd`, `click`, `find`, `grep` | Reads and acts through the Playwright worker |
+| Persistent evidence | Snapshots, reports, crawl results, diffs | Saves worker output in the session directory |
+| Local viewer | `viewer-manifest.json` | Opens saved runs and diffs |
 
 ### Layer 1: Live AX Shell
 
@@ -56,19 +52,19 @@ Shell extras match DOMShell ergonomics: `goto` (alias for `navigate`), `cd tabs/
 
 Every session gets a durable directory:
 
-```
-<sessionRoot>/
-  config.json
-  viewer-manifest.json
-  site/
-    README.md
-    current/               # latest snapshot
-    history/<snapshotId>/  # immutable snapshots
-    pages/<slug>/          # named page copies + issues.json
-    reports/               # QA markdown/json, diffs
-    crawl/manifest.json
-    flows/<name>.json
-```
+Paths below are relative to the session directory.
+
+| Path | Contents |
+| --- | --- |
+| `config.json` | Session settings |
+| `viewer-manifest.json` | Index used by the local viewer |
+| `site/README.md` | Session overview |
+| `site/current/` | Latest snapshot |
+| `site/history/<snapshotId>/` | Immutable snapshots |
+| `site/pages/<slug>/` | Named page copies and `issues.json` |
+| `site/reports/` | Markdown and JSON reports, plus diffs |
+| `site/crawl/manifest.json` | Crawl results |
+| `site/flows/<name>.json` | Saved flows |
 
 `@sitefs/sitefs` handles snapshot I/O, page diffs, run registry, and viewer manifests. `@sitefs/qa` runs static checks, link probes, and report builders. Two diff modules serve different needs:
 

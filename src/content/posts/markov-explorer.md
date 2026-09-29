@@ -27,13 +27,12 @@ On top of that, charts and summaries give deeper insight: histograms for reward 
 
 MarkovExplorer lives in a Next.js 14 + TypeScript environment. The `mdp-viz` directory holds the entire frontend:
 
-```text
-src/
-├── app/                    # Next.js app router
-├── components/             # Graphs, configurator & result widgets
-├── lib/                    # Simulation & optimization logic
-└── types/                  # Shared TypeScript definitions
-```
+| Directory | Contents |
+| --- | --- |
+| `src/app/` | Next.js routes |
+| `src/components/` | Graphs, configurator, and results UI |
+| `src/lib/` | Simulation and optimization logic |
+| `src/types/` | Shared TypeScript definitions |
 
 ### Core Libraries
 

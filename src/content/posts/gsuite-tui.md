@@ -36,11 +36,10 @@ I chose Rust for this project for a few reasons: performance, memory safety, and
 
 The architecture follows a standard event-driven TUI pattern:
 
-```
-Input Events → App State → UI Rendering
-     ↑                          ↓
-     └──────── Event Loop ──────┘
-```
+1. Read an input event.
+2. Update the application state.
+3. Render the active service from that state.
+4. Return to the event loop for the next input or API response.
 
 Each Google service (Calendar, Gmail, Drive) is implemented as a separate module with its own state management, while sharing common authentication and rendering infrastructure.
 
@@ -90,24 +89,21 @@ Designing for the terminal has unique constraints. You're working with:
 
 The interface uses a three-pane layout:
 
-```
-┌────────────────────────────────────────────────┐
-│  GSuiteTUI                        user@gmail   │
-├──────────────┬─────────────────────────────────┤
-│              │                                 │
-│  ▸ Calendar  │  Today - Feb 2, 2026            │
-│    Gmail     │                                 │
-│    Drive     │  09:00 (30 min) - Team Standup  │
-│              │  11:00 (60 min) - Design Review │
-│              │  14:00 (45 min) - 1:1 with PM   │
-│              │                                 │
-│              │  Tomorrow                       │
-│              │  10:00 (90 min) - Sprint Plan   │
-│              │                                 │
-├──────────────┴─────────────────────────────────┤
-│ [j/k] Navigate  [Enter] Details  [q] Quit      │
-└────────────────────────────────────────────────┘
-```
+| Region | Contents |
+| --- | --- |
+| Header | GSuiteTUI and the signed-in account |
+| Left pane | Calendar, Gmail, and Drive selection |
+| Main pane | Events, messages, or files for the selected service |
+| Footer | Available keys, such as `j/k`, `Enter`, and `q` |
+
+For example, the Calendar pane groups events by day:
+
+| Day | Time | Duration | Event |
+| --- | --- | --- | --- |
+| Today | 09:00 | 30 min | Team Standup |
+| Today | 11:00 | 60 min | Design Review |
+| Today | 14:00 | 45 min | 1:1 with PM |
+| Tomorrow | 10:00 | 90 min | Sprint Plan |
 
 The left pane shows service selection, the main pane shows service content, and the footer displays context-sensitive keybindings. Colors indicate status—upcoming events in green, overdue in red, unread emails in bold.
 

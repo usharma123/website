@@ -27,11 +27,11 @@ That way, the editor stays smooth even when linting frequently.
 
 The project is structured as a pnpm workspace:
 
-```text
-apps/editor/          # React + TipTap web app
-apps/extension/       # Chrome extension build
-packages/engine-wasm/ # Rust crate compiled to WebAssembly
-```
+| Directory | Contents |
+| --- | --- |
+| `apps/editor/` | React and TipTap web app |
+| `apps/extension/` | Chrome extension build |
+| `packages/engine-wasm/` | Rust crate compiled to WebAssembly |
 
 This split made development cleaner: UI iteration happened in `apps/editor`, while engine logic stayed isolated in `packages/engine-wasm`.
 

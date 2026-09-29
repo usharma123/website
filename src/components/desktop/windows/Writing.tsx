@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useDesktop } from '../Desktop'
 import { Toolbar } from '../Window'
 
@@ -24,10 +25,10 @@ export default function Writing() {
       <ol>
         {posts.map((p) => (
           <li key={p.slug} className="border-rule border-b">
-            <a
+            <Link
+              scroll={false}
               href={`/blog/${p.slug}`}
-              onClick={(e) => {
-                if (e.metaKey || e.ctrlKey || e.shiftKey) return
+              onNavigate={(e) => {
                 e.preventDefault()
                 openPost(p.slug)
               }}
@@ -47,7 +48,7 @@ export default function Writing() {
                   {p.description}
                 </span>
               </span>
-            </a>
+            </Link>
           </li>
         ))}
       </ol>

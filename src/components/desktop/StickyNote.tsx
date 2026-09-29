@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import EXPERIENCE from '@/data/experience'
 import { EDUCATION } from '@/data/resume'
 import type { PostMeta } from '@/lib/posts'
@@ -23,13 +24,17 @@ export default function StickyNote({ latest }: { latest?: PostMeta }) {
         {latest ? (
           <li>
             → latest post:{' '}
-            <button
-              type="button"
-              onClick={() => openPost(latest.slug)}
+            <Link
+              href={`/blog/${latest.slug}`}
+              scroll={false}
+              onNavigate={(e) => {
+                e.preventDefault()
+                openPost(latest.slug)
+              }}
               className="hover:bg-ink hover:text-marker text-left underline decoration-1 underline-offset-2"
             >
               {latest.title.split(':')[0]}
-            </button>
+            </Link>
           </li>
         ) : null}
       </ul>

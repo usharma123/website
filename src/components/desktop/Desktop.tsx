@@ -25,6 +25,9 @@ import {
   type AppSpec,
   type WinId,
 } from './apps'
+import Phone from './mobile/Phone'
+import { PHONE_MEDIA, type PhoneView } from './mobile/gestures'
+import { useWindowLocation } from './useWindowLocation'
 import StickyNote from './StickyNote'
 import Taskbar from './Taskbar'
 import Window from './Window'
@@ -96,6 +99,9 @@ export default function Desktop({
   // The URL follows the focused window, but only once the visitor has
   // done something — the home route shouldn't rewrite itself on load.
   const touched = useRef(false)
+  const [phoneView, setPhoneView] = useState<PhoneView>(() =>
+    pathname === '/' ? 'home' : 'app',
+  )
   const [loadedPost, setLoadedPost] = useState<string | null>(state.postSlug)
 
   const place = useCallback((spec: AppSpec): Rect | undefined => {
@@ -113,6 +119,7 @@ export default function Desktop({
   const open = useCallback(
     (id: WinId) => {
       touched.current = true
+      setPhoneView('app')
       const exists = stateRef.current.wins.some((w) => w.id === id)
       const spec = specFor(id, posts, stateRef.current.postSlug)
       dispatch({ type: 'open', id, rect: exists ? undefined : place(spec) })
@@ -145,20 +152,24 @@ export default function Desktop({
 
   const focused = focusedWin(state)
 
-  useEffect(() => {
-    if (!touched.current) return
-    // A post's URL belongs to the router while it's still loading.
-    const path =
-      focused?.id === 'post'
-        ? loadedPost && loadedPost === state.postSlug
-          ? `/blog/${loadedPost}`
-          : undefined
-        : focused
-          ? specFor(focused.id, posts, null).path
-          : '/'
-    if (path && path !== window.location.pathname)
-      window.history.replaceState(null, '', path)
-  }, [focused, state.postSlug, loadedPost, posts])
+  const visiblePhoneView = phoneView === 'app' && !focused ? 'home' : phoneView
+  const changePhoneView = useCallback((view: PhoneView) => {
+    setPhoneView(view)
+    if (view === 'home' && window.matchMedia(PHONE_MEDIA).matches) {
+      if (document.activeElement instanceof HTMLElement)
+        document.activeElement.blur()
+      window.history.replaceState(null, '', '/')
+    }
+  }, [])
+
+  useWindowLocation({
+    focusedId: focused?.id,
+    spec: focused ? specFor(focused.id, posts, state.postSlug) : null,
+    postSlug: state.postSlug,
+    loadedPost,
+    phoneView,
+    touched,
+  })
 
   // Going back past the first post leaves the reader window with nothing
   // to show, so close it.
@@ -166,12 +177,6 @@ export default function Desktop({
     if (!pathname.startsWith('/blog/') && !loadedPost)
       dispatch({ type: 'close', id: 'post' })
   }, [pathname, loadedPost])
-
-  useEffect(() => {
-    if (!touched.current) return
-    const spec = focused ? specFor(focused.id, posts, state.postSlug) : null
-    document.title = spec ? `${spec.title} — Utsav Sharma` : 'Utsav Sharma'
-  }, [focused, posts, state.postSlug])
 
   const postWin = state.wins.find((w) => w.id === 'post')
 
@@ -197,10 +202,13 @@ export default function Desktop({
 
   return (
     <Ctx.Provider value={api}>
-      <div className="wallpaper fixed inset-0 overflow-hidden">
+      <div
+        className="wallpaper fixed inset-0 overflow-hidden"
+        data-phone-view={visiblePhoneView}
+      >
         <nav
           aria-label="Desktop"
-          className="absolute top-4 left-3 grid grid-cols-3 gap-1 md:grid-cols-1 md:gap-2"
+          className="desktop-icons absolute top-4 left-3 grid grid-cols-3 gap-1 md:grid-cols-1 md:gap-2"
         >
           {DESKTOP_APPS.map((id) => (
             <DesktopIcon key={id} id={id} onOpen={() => open(id)} />
@@ -209,12 +217,12 @@ export default function Desktop({
 
         <StickyNote latest={posts[0]} />
 
-        <div className="absolute right-4 bottom-[60px]">
+        <div className="desktop-trash absolute right-4 bottom-[60px]">
           <DesktopIcon id="trash" label="Trash" onOpen={() => open('trash')} />
         </div>
 
         <div
-          className="pointer-events-none absolute inset-x-0 top-0"
+          className="desktop-workspace pointer-events-none absolute inset-x-0 top-0"
           style={{ bottom: TASKBAR }}
         >
           {state.wins.map((w) => {
@@ -251,6 +259,20 @@ export default function Desktop({
               dispatch({ type: 'minimize', id })
             else open(id)
           }}
+        />
+        <Phone
+          view={visiblePhoneView}
+          onView={changePhoneView}
+          wins={state.wins}
+          focusedId={focused?.id}
+          titleOf={(id) => specFor(id, posts, state.postSlug).title}
+          iconFor={(id, size) => (
+            <Icon name={specFor(id, posts, state.postSlug).icon} size={size} />
+          )}
+          onOpen={open}
+          onClose={api.close}
+          onPost={api.openPost}
+          posts={posts}
         />
       </div>
     </Ctx.Provider>

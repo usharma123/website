@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Mono, Instrument_Sans } from 'next/font/google'
 
 import Desktop from '@/components/desktop/Desktop'
@@ -15,6 +15,13 @@ const mono = IBM_Plex_Mono({
   weight: ['400', '500', '600'],
   variable: '--font-plex-mono',
 })
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  interactiveWidget: 'resizes-content',
+}
 
 export const metadata: Metadata = {
   title: { default: PROFILE.name, template: `%s — ${PROFILE.name}` },

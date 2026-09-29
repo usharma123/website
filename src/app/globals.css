@@ -294,3 +294,67 @@ textarea:focus-visible {
   scrollbar-color: rgb(20 27 38 / 0.35) transparent;
   scrollbar-width: thin;
 }
+
+/* Phones use a home screen and one full-screen app at a time. */
+@media (max-width: 767px), (pointer: coarse) and (max-width: 1023px) {
+  .wallpaper > .desktop-icons,
+  .wallpaper > .desktop-trash,
+  .wallpaper > aside,
+  .wallpaper > footer {
+    display: none;
+  }
+  .desktop-workspace {
+    top: calc(52px + env(safe-area-inset-top, 0px));
+    bottom: calc(32px + env(safe-area-inset-bottom, 0px)) !important;
+    left: env(safe-area-inset-left, 0px);
+    right: env(safe-area-inset-right, 0px);
+  }
+  .wallpaper:not([data-phone-view='app']) .desktop-workspace {
+    display: none;
+  }
+  .desktop-workspace .win {
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .desktop-workspace .win:not([data-focused='true']),
+  .desktop-workspace .win > header,
+  .desktop-workspace .win > [aria-hidden] {
+    display: none;
+  }
+  .window-content {
+    overscroll-behavior: contain;
+    overflow-wrap: anywhere;
+  }
+  .win[data-app='terminal'] label {
+    flex-wrap: wrap;
+    font-size: 16px;
+  }
+  .win[data-app='terminal'] label > span:first-child {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .win[data-app='terminal'] label > span:last-child {
+    min-width: 8ch;
+  }
+  .win input,
+  .win textarea,
+  .win select {
+    font-size: 16px;
+  }
+  .win .btn {
+    min-height: 44px;
+    white-space: normal;
+  }
+  .win[data-app='post'] article {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .win[data-app='post'] h1 {
+    font-size: 1.8rem;
+  }
+}

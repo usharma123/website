@@ -10,9 +10,9 @@ import {
 
 import { Icon, type AppSpec } from './apps'
 import type { Rect, Win } from './state'
+import { PHONE_MEDIA } from './mobile/gestures'
 
 const TASKBAR = 44
-const MOBILE = '(max-width: 767px)'
 
 type Props = {
   win: Win
@@ -41,7 +41,7 @@ export default function Window({
 
   // Coming to the front hands the keyboard to the window's main input.
   useEffect(() => {
-    if (focused)
+    if (focused && !window.matchMedia(PHONE_MEDIA).matches)
       ref.current?.querySelector<HTMLElement>('[data-autofocus]')?.focus()
   }, [focused, win.z])
 
@@ -53,7 +53,7 @@ export default function Window({
       !el ||
       win.maximized ||
       e.button !== 0 ||
-      window.matchMedia(MOBILE).matches
+      window.matchMedia(PHONE_MEDIA).matches
     )
       return
     e.preventDefault()
@@ -107,6 +107,8 @@ export default function Window({
     <section
       ref={ref}
       aria-label={spec.title}
+      data-focused={focused}
+      data-app={win.id}
       onPointerDownCapture={onFocus}
       style={{ ...placement(win, spec), zIndex: win.z }}
       className={[
@@ -143,7 +145,7 @@ export default function Window({
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 overflow-auto">{children}</div>
+      <div className="window-content min-h-0 flex-1 overflow-auto">{children}</div>
 
       {win.maximized ? null : (
         <div

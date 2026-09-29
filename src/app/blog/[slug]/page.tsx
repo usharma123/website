@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import { compileMDX } from 'next-mdx-remote/rsc'
 import { notFound } from 'next/navigation'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
@@ -28,29 +28,31 @@ export default async function BlogPost({ params }: Props) {
   const post = getPost(slug)
   if (!post) notFound()
 
+  // Mount the reader only when the entire article, including diagrams, is
+  // ready. Otherwise PostMount clears the loading state before MDX resolves.
+  const { content } = await compileMDX({
+    source: post.content,
+    options: {
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [rehypeHighlight],
+      },
+    },
+    components: {
+      pre: CodeBlock,
+      table: (props) => (
+        <div className="table-wrap">
+          <table {...props} />
+        </div>
+      ),
+    },
+  })
+
   return (
     <article className="mx-auto max-w-[680px] px-6 py-8 sm:px-10">
       <PostMount slug={slug} />
       <PostHeader meta={post.meta} />
-      <div className="prose">
-        <MDXRemote
-          source={post.content}
-          options={{
-            mdxOptions: {
-              remarkPlugins: [remarkGfm],
-              rehypePlugins: [rehypeHighlight],
-            },
-          }}
-          components={{
-            pre: CodeBlock,
-            table: (props) => (
-              <div className="table-wrap">
-                <table {...props} />
-              </div>
-            ),
-          }}
-        />
-      </div>
+      <div className="prose">{content}</div>
     </article>
   )
 }

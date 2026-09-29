@@ -165,7 +165,10 @@ export default function Window({
       aria-label={spec.title}
       data-focused={focused}
       data-app={win.id}
-      onPointerDownCapture={onFocus}
+      onPointerDownCapture={(e) => {
+        // Closing or minimizing a background window must not raise it first.
+        if (!(e.target as Element).closest('[data-window-controls]')) onFocus()
+      }}
       style={{ ...placement(win, spec), zIndex: win.z }}
       className={[
         'win border-ink bg-paper pointer-events-auto absolute flex-col overflow-hidden rounded-lg border-[1.5px]',
@@ -184,13 +187,20 @@ export default function Window({
         <h2 className="min-w-0 flex-1 truncate text-[13px] font-semibold">
           {spec.title}
         </h2>
-        <div className="flex gap-1" onPointerDown={(e) => e.stopPropagation()}>
+        <div
+          data-window-controls
+          className="flex gap-1"
+          onPointerDown={(e) => e.stopPropagation()}
+        >
           <TitleButton label="Minimize" onClick={onMinimize}>
             <path d="M3 8.5h8" />
           </TitleButton>
           <TitleButton
             label={win.maximized ? 'Restore' : 'Maximize'}
-            onClick={onToggleMax}
+            onClick={() => {
+              onFocus()
+              onToggleMax()
+            }}
           >
             <path d="M3 3h8v8H3z" />
           </TitleButton>

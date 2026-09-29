@@ -1,8 +1,8 @@
 'use client'
 
-import PROJECTS from '@/data/projects'
-import { useDesktop } from '../Desktop'
-import { KIND_LABEL, Preview } from './Projects'
+import PROJECTS, { KIND_LABEL } from '@/data/projects'
+import { useDesktop } from '../context'
+import ProjectPreview from '../ProjectPreview'
 
 export default function ProjectDetail({ slug }: { slug: string }) {
   const { openPost, posts } = useDesktop()
@@ -16,7 +16,7 @@ export default function ProjectDetail({ slug }: { slug: string }) {
   return (
     <article>
       <div className="border-ink border-b-[1.5px]">
-        <Preview project={p} tall />
+        <ProjectPreview project={p} tall eager />
       </div>
       <div className="space-y-4 px-6 py-5">
         <div>

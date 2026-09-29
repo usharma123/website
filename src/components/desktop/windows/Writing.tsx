@@ -1,16 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useDesktop } from '../Desktop'
+import { formatDate } from '@/lib/format'
+import { useDesktop } from '../context'
 import { Toolbar } from '../Window'
-
-export function formatDate(iso: string) {
-  return new Date(`${iso}T12:00:00`).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
-}
 
 export default function Writing() {
   const { posts, openPost } = useDesktop()

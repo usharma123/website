@@ -1,9 +1,12 @@
 'use client'
 
+import Image from 'next/image'
+
 import PROJECTS from '@/data/projects'
 import { PROFILE } from '@/data/resume'
-import { useDesktop } from '../Desktop'
-import { Icon, type AppId, type IconName } from '../apps'
+import type { AppId } from '../apps'
+import { useDesktop } from '../context'
+import { Icon, type IconName } from '../icons'
 
 export default function Readme() {
   const { open, posts } = useDesktop()
@@ -38,7 +41,7 @@ export default function Readme() {
   return (
     <article className="px-7 py-6">
       <header className="flex items-center gap-4">
-        <img
+        <Image
           src="/avatar.png"
           alt=""
           width={76}
@@ -61,10 +64,10 @@ export default function Readme() {
           biochemistry.
         </p>
         <p>
-          Right now I’m a software engineer at Xoriant, working on CLS Group’s
-          CLSnet platform, and finishing a master’s in computer science at Penn.
-          On the side I build developer tools — usually ones that live in a
-          terminal or help AI agents test and reason about code.
+          Right now I’m a Senior Associate – Software Engineer at CLS, working
+          on the CLSnet platform, and finishing a master’s in computer science
+          at Penn. On the side I build developer tools — usually ones that live
+          in a terminal or help AI agents test and reason about code.
         </p>
         <p>
           Before that I co-founded Vetra, where we built retrieval and scraping

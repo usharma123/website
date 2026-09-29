@@ -11,8 +11,6 @@ export type Win = {
   h?: number
   minimized: boolean
   maximized: boolean
-  /** Opened by the home route rather than the visitor; hidden on phones. */
-  auto: boolean
 }
 
 export type State = { wins: Win[]; top: number; postSlug: string | null }
@@ -25,19 +23,18 @@ export type Action =
   | { type: 'toggleMax'; id: WinId }
   | { type: 'rect'; id: WinId; rect: Rect }
   | { type: 'post'; slug: string }
+  | { type: 'arrange'; rects: Rect[] }
+  | { type: 'closeAll' }
 
-function win(id: WinId, z: number, auto = false): Win {
-  return { id, z, minimized: false, maximized: false, auto }
+function win(id: WinId, z: number): Win {
+  return { id, z, minimized: false, maximized: false }
 }
 
 export function initialState(pathname: string): State {
-  const app = appForPath(pathname)
+  const app = appForPath(pathname) ?? 'home'
   const postSlug =
     app === 'post' ? decodeURIComponent(pathname.slice('/blog/'.length)) : null
-  const wins = app
-    ? [win(app, 1)]
-    : [win('readme', 1, true), win('projects', 2, true)]
-  return { wins, top: wins.length, postSlug }
+  return { wins: [win(app, 1)], top: 1, postSlug }
 }
 
 function update(
@@ -60,7 +57,6 @@ export function reducer(state: State, action: Action): State {
           ...update(state, action.id, () => ({
             z: top,
             minimized: false,
-            auto: false,
           })),
           top,
         }
@@ -87,6 +83,23 @@ export function reducer(state: State, action: Action): State {
       return update(state, action.id, () => action.rect)
     case 'post':
       return { ...state, postSlug: action.slug }
+    case 'arrange': {
+      // Cascade open windows in their current stacking order.
+      const order = state.wins
+        .filter((w) => !w.minimized)
+        .sort((a, b) => a.z - b.z)
+      return {
+        ...state,
+        wins: state.wins.map((w) => {
+          const i = order.indexOf(w)
+          return i < 0 || !action.rects[i]
+            ? w
+            : { ...w, ...action.rects[i], maximized: false }
+        }),
+      }
+    }
+    case 'closeAll':
+      return { ...state, wins: [] }
   }
 }
 

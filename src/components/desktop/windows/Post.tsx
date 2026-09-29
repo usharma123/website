@@ -3,8 +3,8 @@
 import { useEffect, type ReactNode } from 'react'
 
 import type { PostMeta } from '@/lib/posts'
-import { useDesktop } from '../Desktop'
-import { formatDate } from './Writing'
+import { formatDate } from '@/lib/format'
+import { useDesktop } from '../context'
 
 /** The reader window's body. The article itself comes from the post route. */
 export default function Post({

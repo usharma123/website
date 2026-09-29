@@ -3,31 +3,33 @@
 import dynamic from 'next/dynamic'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useReducer,
   useRef,
   useState,
+  type MouseEvent,
   type ReactNode,
 } from 'react'
 
-import PROJECTS from '@/data/projects'
 import type { PostMeta } from '@/lib/posts'
 import {
   APPS,
   DESKTOP_APPS,
-  Icon,
-  PROJECT_SPEC,
+  specFor,
   type AppId,
   type AppSpec,
   type WinId,
 } from './apps'
+import ContextMenu from './ContextMenu'
+import { DesktopContext, type DesktopApi, type Wallpaper } from './context'
+import { Icon } from './icons'
+import Search from './Search'
 import Phone from './mobile/Phone'
-import { PHONE_MEDIA, type PhoneView } from './mobile/gestures'
 import { useWindowLocation } from './useWindowLocation'
+import { PHONE_MEDIA, type PhoneView } from './mobile/gestures'
 import StickyNote from './StickyNote'
 import Taskbar from './Taskbar'
 import Window from './Window'
@@ -38,50 +40,23 @@ import {
   type Rect,
   type State,
 } from './state'
-import Contact from './windows/Contact'
+import Home from './windows/Home'
 import Post from './windows/Post'
-import ProjectDetail from './windows/ProjectDetail'
-import Projects from './windows/Projects'
-import Readme from './windows/Readme'
-import Resume from './windows/Resume'
-import Terminal from './windows/Terminal'
-import Trash from './windows/Trash'
-import Writing from './windows/Writing'
 
+// Window bodies load on demand; Home ships with the page because it's what
+// most visitors see first.
+const Readme = dynamic(() => import('./windows/Readme'))
+const Projects = dynamic(() => import('./windows/Projects'))
+const ProjectDetail = dynamic(() => import('./windows/ProjectDetail'))
+const Writing = dynamic(() => import('./windows/Writing'))
+const Resume = dynamic(() => import('./windows/Resume'))
+const Terminal = dynamic(() => import('./windows/Terminal'))
+const Contact = dynamic(() => import('./windows/Contact'))
+const Trash = dynamic(() => import('./windows/Trash'))
 const Blackjack = dynamic(() => import('./windows/Blackjack'))
 
 const TASKBAR = 44
-
-type DesktopApi = {
-  posts: PostMeta[]
-  open: (id: WinId) => void
-  close: (id: WinId) => void
-  openProject: (slug: string) => void
-  openPost: (slug: string) => void
-  /** Called by the post route so the reader window tracks what's loaded. */
-  mountPost: (slug: string) => () => void
-}
-
-const Ctx = createContext<DesktopApi | null>(null)
-
-export function useDesktop() {
-  const api = useContext(Ctx)
-  if (!api) throw new Error('useDesktop outside <Desktop>')
-  return api
-}
-
-export function specFor(id: WinId, posts: PostMeta[], postSlug: string | null) {
-  if (id.startsWith('project:')) {
-    const p = PROJECTS.find((p) => `project:${p.slug}` === id)
-    return { ...PROJECT_SPEC, title: p?.name ?? 'Project' }
-  }
-  const spec = APPS[id as AppId]
-  if (id === 'post') {
-    const post = posts.find((p) => p.slug === postSlug)
-    return { ...spec, title: post?.title ?? spec.title }
-  }
-  return spec
-}
+const WALLPAPER_KEY = 'desktop:wallpaper'
 
 export default function Desktop({
   posts,
@@ -93,16 +68,29 @@ export default function Desktop({
   const pathname = usePathname()
   const router = useRouter()
   const [state, dispatch] = useReducer(reducer, pathname, initialState)
-  const stateRef = useRef<State>(state)
-  stateRef.current = state
-
-  // The URL follows the focused window, but only once the visitor has
-  // done something — the home route shouldn't rewrite itself on load.
-  const touched = useRef(false)
   const [phoneView, setPhoneView] = useState<PhoneView>(() =>
     pathname === '/' ? 'home' : 'app',
   )
   const [loadedPost, setLoadedPost] = useState<string | null>(state.postSlug)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null)
+  const [wallpaper, setWallpaperState] = useState<Wallpaper>('dots')
+
+  // Handlers read the latest state through a ref so they stay stable.
+  const stateRef = useRef<State>(state)
+  useLayoutEffect(() => {
+    stateRef.current = state
+  }, [state])
+
+  // The URL follows the focused window, but only once the visitor has
+  // done something — a route shouldn't rewrite itself on load.
+  const touched = useRef(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem(WALLPAPER_KEY)
+    if (saved === 'dots' || saved === 'grid' || saved === 'plain')
+      setWallpaperState(saved)
+  }, [])
 
   const place = useCallback((spec: AppSpec): Rect | undefined => {
     const vw = window.innerWidth
@@ -146,12 +134,20 @@ export default function Desktop({
         dispatch({ type: 'post', slug })
         return () => setLoadedPost((s) => (s === slug ? null : s))
       },
+      openSearch: () => setSearchOpen(true),
+      wallpaper,
+      setWallpaper: (w) => {
+        setWallpaperState(w)
+        localStorage.setItem(WALLPAPER_KEY, w)
+      },
     }),
-    [open, posts, router],
+    [open, posts, router, wallpaper],
   )
 
-  const focused = focusedWin(state)
+  const closeSearch = useCallback(() => setSearchOpen(false), [])
+  const closeMenu = useCallback(() => setMenu(null), [])
 
+  const focused = focusedWin(state)
   const visiblePhoneView = phoneView === 'app' && !focused ? 'home' : phoneView
   const changePhoneView = useCallback((view: PhoneView) => {
     setPhoneView(view)
@@ -178,6 +174,58 @@ export default function Desktop({
       dispatch({ type: 'close', id: 'post' })
   }, [pathname, loadedPost])
 
+  // ⌘K / Ctrl+K searches; ` toggles the terminal when you're not typing.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        setSearchOpen((o) => !o)
+        return
+      }
+      const t = e.target as HTMLElement | null
+      const typing =
+        t?.isContentEditable ||
+        t?.tagName === 'INPUT' ||
+        t?.tagName === 'TEXTAREA'
+      if (e.key === '`' && !typing && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault()
+        const top = focusedWin(stateRef.current)
+        if (top?.id === 'terminal')
+          dispatch({ type: 'minimize', id: 'terminal' })
+        else open('terminal')
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open])
+
+  function arrange() {
+    touched.current = true
+    const vw = window.innerWidth
+    const vh = window.innerHeight - TASKBAR
+    const order = state.wins
+      .filter((w) => !w.minimized)
+      .sort((a, b) => a.z - b.z)
+    const rects = order.map((w, i) => {
+      const spec = specFor(w.id, posts, state.postSlug)
+      const ww = Math.min(spec.w, vw - 160)
+      const hh = Math.min(spec.h, vh - 48 - order.length * 28)
+      return { x: 128 + i * 32, y: 24 + i * 28, w: ww, h: Math.max(hh, 280) }
+    })
+    dispatch({ type: 'arrange', rects })
+  }
+
+  function onDesktopMenu(e: MouseEvent) {
+    // Only the bare desktop gets the custom menu; windows keep the browser's.
+    if ((e.target as HTMLElement).closest('section, footer, dialog')) return
+    e.preventDefault()
+    // Keep the menu on screen near the right and bottom edges.
+    setMenu({
+      x: Math.min(e.clientX, window.innerWidth - 232),
+      y: Math.min(e.clientY, window.innerHeight - 330),
+    })
+  }
+
   const postWin = state.wins.find((w) => w.id === 'post')
 
   function frame(id: WinId, body: ReactNode) {
@@ -193,6 +241,9 @@ export default function Desktop({
         onClose={() => api.close(id)}
         onMinimize={() => dispatch({ type: 'minimize', id })}
         onToggleMax={() => dispatch({ type: 'toggleMax', id })}
+        onMaximize={() => {
+          if (!w.maximized) dispatch({ type: 'toggleMax', id })
+        }}
         onRect={(rect) => dispatch({ type: 'rect', id, rect })}
       >
         {body}
@@ -201,14 +252,15 @@ export default function Desktop({
   }
 
   return (
-    <Ctx.Provider value={api}>
+    <DesktopContext.Provider value={api}>
       <div
-        className="wallpaper fixed inset-0 overflow-hidden"
+        className={`wallpaper wallpaper-${wallpaper} fixed inset-0 overflow-hidden`}
         data-phone-view={visiblePhoneView}
+        onContextMenu={onDesktopMenu}
       >
         <nav
           aria-label="Desktop"
-          className="desktop-icons absolute top-4 left-3 grid grid-cols-3 gap-1 md:grid-cols-1 md:gap-2"
+          className="desktop-icons absolute top-4 left-3 grid grid-cols-4 gap-1 md:grid-cols-1 md:gap-1"
         >
           {DESKTOP_APPS.map((id) => (
             <DesktopIcon key={id} id={id} onOpen={() => open(id)} />
@@ -254,12 +306,11 @@ export default function Desktop({
           titleOf={(id) => specFor(id, posts, state.postSlug).title}
           iconOf={(id) => specFor(id, posts, state.postSlug).icon}
           onTask={(id) => {
-            const w = state.wins.find((w) => w.id === id)
-            if (w && !w.auto && focused?.id === id)
-              dispatch({ type: 'minimize', id })
+            if (focused?.id === id) dispatch({ type: 'minimize', id })
             else open(id)
           }}
         />
+
         <Phone
           view={visiblePhoneView}
           onView={changePhoneView}
@@ -274,13 +325,30 @@ export default function Desktop({
           onPost={api.openPost}
           posts={posts}
         />
+
+        {menu ? (
+          <ContextMenu
+            x={menu.x}
+            y={menu.y}
+            onClose={closeMenu}
+            onArrange={arrange}
+            onCloseAll={() => {
+              touched.current = true
+              dispatch({ type: 'closeAll' })
+            }}
+          />
+        ) : null}
       </div>
-    </Ctx.Provider>
+
+      {searchOpen ? <Search onClose={closeSearch} /> : null}
+    </DesktopContext.Provider>
   )
 }
 
 function AppBody({ id }: { id: AppId }) {
   switch (id) {
+    case 'home':
+      return <Home />
     case 'readme':
       return <Readme />
     case 'projects':
@@ -316,7 +384,7 @@ function DesktopIcon({
     <button
       type="button"
       onClick={onOpen}
-      className="group flex w-[88px] flex-col items-center gap-1 rounded-md p-1.5 text-center focus-visible:outline-offset-0"
+      className="group flex w-[84px] flex-col items-center gap-1 rounded-md p-1.5 text-center focus-visible:outline-offset-0"
     >
       <span className="transition-transform group-hover:-translate-y-0.5 group-active:translate-y-0">
         <Icon name={spec.icon} size={32} />

@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { PROFILE } from '@/data/resume'
-import { APPS, DESKTOP_APPS, Icon, type IconName, type WinId } from './apps'
-import { useDesktop } from './Desktop'
+import { APPS, DESKTOP_APPS, type WinId } from './apps'
+import { useDesktop } from './context'
+import { Icon, type IconName } from './icons'
 import type { Win } from './state'
 
 type Props = {
@@ -34,7 +35,7 @@ export default function Taskbar({
               type="button"
               onClick={() => onTask(w.id)}
               aria-pressed={active}
-              className={`${w.auto ? 'max-md:hidden' : ''} flex h-8 max-w-[180px] shrink-0 items-center gap-1.5 rounded border-[1.5px] px-2 text-[12.5px] font-medium ${
+              className={`flex h-8 max-w-[180px] shrink-0 items-center gap-1.5 rounded border-[1.5px] px-2 text-[12.5px] font-medium ${
                 active
                   ? 'border-ink bg-paper shadow-[inset_0_-2px_0_var(--color-accent)]'
                   : 'text-muted hover:border-ink/30 hover:text-ink border-transparent'

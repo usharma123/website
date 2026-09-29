@@ -8,7 +8,8 @@ import {
   type ReactNode,
 } from 'react'
 
-import { Icon, type AppSpec } from './apps'
+import type { AppSpec } from './apps'
+import { Icon } from './icons'
 import type { Rect, Win } from './state'
 import { PHONE_MEDIA } from './mobile/gestures'
 
@@ -23,6 +24,8 @@ type Props = {
   onMinimize: () => void
   onToggleMax: () => void
   onRect: (rect: Rect) => void
+  /** Dropped against the top edge while dragging. */
+  onMaximize: () => void
   children: ReactNode
 }
 
@@ -35,6 +38,7 @@ export default function Window({
   onMinimize,
   onToggleMax,
   onRect,
+  onMaximize,
   children,
 }: Props) {
   const ref = useRef<HTMLElement>(null)
@@ -70,7 +74,46 @@ export default function Window({
     }
     el.style.right = 'auto'
 
+    // Dragging into a screen edge snaps: left/right halves, or the top to
+    // maximize. A ghost outline previews where the window will land.
+    let snap: 'left' | 'right' | 'max' | null = null
+    const ghost = document.createElement('div')
+    ghost.className =
+      'pointer-events-none absolute rounded-lg border-2 border-dashed border-accent bg-accent/10 transition-all duration-100'
+    const snapRect = (s: typeof snap): Rect | null =>
+      s === 'left'
+        ? { x: 0, y: 0, w: Math.round(vw / 2), h: vh }
+        : s === 'right'
+          ? { x: Math.round(vw / 2), y: 0, w: vw - Math.round(vw / 2), h: vh }
+          : s === 'max'
+            ? { x: 0, y: 0, w: vw, h: vh }
+            : null
+
     const move = (ev: globalThis.PointerEvent) => {
+      if (mode === 'move') {
+        const next =
+          ev.clientY <= 2
+            ? 'max'
+            : ev.clientX <= 4
+              ? 'left'
+              : ev.clientX >= vw - 4
+                ? 'right'
+                : null
+        if (next !== snap) {
+          snap = next
+          const r = snapRect(snap)
+          if (r) {
+            Object.assign(ghost.style, {
+              left: `${r.x + 6}px`,
+              top: `${r.y + 6}px`,
+              width: `${r.w - 12}px`,
+              height: `${r.h - 12}px`,
+              zIndex: String(win.z - 1),
+            })
+            el.parentElement?.appendChild(ghost)
+          } else ghost.remove()
+        }
+      }
       const dx = ev.clientX - px
       const dy = ev.clientY - py
       rect =
@@ -96,7 +139,20 @@ export default function Window({
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', up)
       document.body.style.userSelect = ''
-      onRect(rect)
+      ghost.remove()
+      const r = snapRect(snap)
+      if (snap === 'max') {
+        onRect(rect)
+        onMaximize()
+      } else if (r) {
+        Object.assign(el.style, {
+          left: `${r.x}px`,
+          top: `${r.y}px`,
+          width: `${r.w}px`,
+          height: `${r.h}px`,
+        })
+        onRect(r)
+      } else onRect(rect)
     }
     document.body.style.userSelect = 'none'
     window.addEventListener('pointermove', move)
@@ -114,7 +170,6 @@ export default function Window({
       className={[
         'win border-ink bg-paper pointer-events-auto absolute flex-col overflow-hidden rounded-lg border-[1.5px]',
         win.maximized ? '!inset-0 !h-full !w-full !rounded-none' : '',
-        win.auto ? 'win-auto' : '',
         win.minimized ? 'hidden' : 'flex',
       ].join(' ')}
     >
@@ -145,7 +200,9 @@ export default function Window({
         </div>
       </header>
 
-      <div className="window-content min-h-0 flex-1 overflow-auto">{children}</div>
+      <div className="window-content @container min-h-0 flex-1 overflow-auto">
+        {children}
+      </div>
 
       {win.maximized ? null : (
         <div

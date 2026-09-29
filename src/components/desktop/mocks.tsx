@@ -9,7 +9,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 const W = 600
 const H = 300
 
-export function Scaled({
+function Scaled({
   className,
   children,
 }: {
@@ -567,7 +567,7 @@ const SSFF = () => {
   )
 }
 
-export const MOCKS: Record<string, () => ReactNode> = {
+const MOCKS: Record<string, () => ReactNode> = {
   sitefs: SiteFS,
   packet28: Packet28,
   gsuitetui: GSuiteTUI,
@@ -579,4 +579,24 @@ export const MOCKS: Record<string, () => ReactNode> = {
   'googledoc-convex': GoogleDocConvex,
   blueskytrading: BlueSky,
   ssff: SSFF,
+}
+
+/** The generated mock for a project, scaled to fill its box, or `fallback`
+ *  when the project doesn't have one. */
+export function ProjectMock({
+  slug,
+  className,
+  fallback = null,
+}: {
+  slug: string
+  className: string
+  fallback?: ReactNode
+}) {
+  const Mock = MOCKS[slug]
+  if (!Mock) return fallback
+  return (
+    <Scaled className={className}>
+      <Mock />
+    </Scaled>
+  )
 }

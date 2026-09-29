@@ -12,7 +12,7 @@ import EXPERIENCE from '@/data/experience'
 import PROJECTS from '@/data/projects'
 import { PROFILE } from '@/data/resume'
 import { APPS, DESKTOP_APPS, type AppId } from '../apps'
-import { useDesktop } from '../Desktop'
+import { useDesktop } from '../context'
 
 type Line = { id: number; input?: string; output?: ReactNode }
 type Ctx = ReturnType<typeof useDesktop>

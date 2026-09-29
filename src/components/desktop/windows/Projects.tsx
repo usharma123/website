@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 
-import PROJECTS, { type Project } from '@/data/projects'
-import { useDesktop } from '../Desktop'
-import { MOCKS, Scaled } from '../mocks'
+import PROJECTS, { KIND_LABEL, type Project } from '@/data/projects'
+import { useDesktop } from '../context'
+import ProjectPreview from '../ProjectPreview'
 import { Toolbar } from '../Window'
 
 const KINDS: { id: Project['kind'] | 'all'; label: string }[] = [
@@ -14,13 +14,6 @@ const KINDS: { id: Project['kind'] | 'all'; label: string }[] = [
   { id: 'web', label: 'Web' },
   { id: 'research', label: 'Research' },
 ]
-
-export const KIND_LABEL: Record<Project['kind'], string> = {
-  agents: 'agents & QA',
-  terminal: 'terminal',
-  web: 'web',
-  research: 'research',
-}
 
 export default function Projects() {
   const { openProject } = useDesktop()
@@ -71,7 +64,7 @@ export default function Projects() {
                 onClick={() => openProject(p.slug)}
                 className="group border-ink bg-paper overflow-hidden rounded-md border-[1.5px] text-left"
               >
-                <Preview project={p} />
+                <ProjectPreview project={p} />
                 <div className="border-ink border-t-[1.5px] p-3">
                   <div className="flex items-baseline gap-2">
                     <span className="font-semibold group-hover:underline">
@@ -132,54 +125,6 @@ export default function Projects() {
           </tbody>
         </table>
       </section>
-    </div>
-  )
-}
-
-/** Real screenshot if there is one, then a generated mock of the tool, then
- *  a typeset card as a last resort. */
-export function Preview({
-  project,
-  tall,
-}: {
-  project: Project
-  tall?: boolean
-}) {
-  const h = tall ? 'h-[240px]' : 'h-[140px]'
-  const Mock = MOCKS[project.slug]
-  if (Mock && !project.screenshot) {
-    return (
-      <Scaled className={h}>
-        <Mock />
-      </Scaled>
-    )
-  }
-  if (project.screenshot) {
-    return (
-      <img
-        src={project.screenshot}
-        alt={`Screenshot of ${project.name}`}
-        loading="lazy"
-        className={`${h} bg-chrome w-full object-cover object-top`}
-      />
-    )
-  }
-  const bg: Record<Project['kind'], string> = {
-    agents: 'bg-accent text-paper',
-    terminal: 'bg-ink text-paper',
-    web: 'bg-clay text-ink',
-    research: 'bg-marker text-ink',
-  }
-  return (
-    <div
-      className={`${h} ${bg[project.kind]} flex flex-col justify-between p-4 font-mono`}
-    >
-      <span className="text-[11.5px] opacity-70">$ open {project.slug}</span>
-      <span
-        className={`${tall ? 'text-[34px]' : 'text-[24px]'} leading-none font-semibold tracking-[-0.03em]`}
-      >
-        {project.name}
-      </span>
     </div>
   )
 }

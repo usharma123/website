@@ -163,4 +163,11 @@ const PROJECTS: Project[] = [
   },
 ]
 
+export const KIND_LABEL: Record<Project['kind'], string> = {
+  agents: 'agents & QA',
+  terminal: 'terminal',
+  web: 'web',
+  research: 'research',
+}
+
 export default PROJECTS

@@ -51,8 +51,22 @@ textarea:focus-visible {
 
 .wallpaper {
   background-color: var(--color-desk);
+}
+.wallpaper-dots {
   background-image: radial-gradient(rgb(20 27 38 / 0.16) 1px, transparent 1px);
   background-size: 22px 22px;
+}
+.wallpaper-grid {
+  background-image:
+    linear-gradient(rgb(30 79 158 / 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(30 79 158 / 0.12) 1px, transparent 1px),
+    linear-gradient(rgb(30 79 158 / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(30 79 158 / 0.06) 1px, transparent 1px);
+  background-size:
+    110px 110px,
+    110px 110px,
+    22px 22px,
+    22px 22px;
 }
 
 .win {
@@ -75,8 +89,7 @@ textarea:focus-visible {
   }
 }
 
-/* Phones get one full-screen window at a time; windows opened
-   automatically on the home route stay closed so the desktop shows. */
+/* Phones get one full-screen window at a time. */
 @media (max-width: 767px) {
   .win {
     inset: 0 0 auto 0 !important;
@@ -85,9 +98,6 @@ textarea:focus-visible {
     border-radius: 0 !important;
     border-left: 0 !important;
     border-right: 0 !important;
-  }
-  .win-auto {
-    display: none !important;
   }
 }
 

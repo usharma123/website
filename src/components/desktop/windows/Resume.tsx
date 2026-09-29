@@ -5,7 +5,8 @@ import { useState } from 'react'
 import EXPERIENCE from '@/data/experience'
 import RESEARCH from '@/data/research'
 import { EDUCATION } from '@/data/resume'
-import SKILLS from '@/data/skills'
+import { shortMonth } from '@/lib/format'
+import SkillGrid from '../SkillGrid'
 import { Toolbar } from '../Window'
 
 const TABS = ['Experience', 'Research', 'Education', 'Skills'] as const
@@ -43,7 +44,7 @@ export default function Resume() {
               key: `${r.company}-${r.role}`,
               title: r.role,
               org: r.company,
-              when: `${short(r.startDate)} – ${short(r.endDate)}`,
+              when: `${shortMonth(r.startDate)} – ${shortMonth(r.endDate)}`,
               where: r.location,
               body: r.description,
               tags: r.tags,
@@ -56,7 +57,7 @@ export default function Resume() {
               key: r.title,
               title: r.title,
               org: r.org,
-              when: `${short(r.startDate)} – ${short(r.endDate)}`,
+              when: `${shortMonth(r.startDate)} – ${shortMonth(r.endDate)}`,
               body: r.description,
               tags: r.stack,
               note: r.highlight,
@@ -74,25 +75,7 @@ export default function Resume() {
             }))}
           />
         ) : null}
-        {tab === 'Skills' ? (
-          <dl className="space-y-4">
-            {SKILLS.map((g) => (
-              <div key={g.field}>
-                <dt className="mb-1.5 font-semibold">{g.field}</dt>
-                <dd className="flex flex-wrap gap-1.5">
-                  {g.skills.map((s) => (
-                    <span
-                      key={s}
-                      className="border-rule bg-chrome rounded border px-1.5 py-0.5 font-mono text-[12px]"
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        ) : null}
+        {tab === 'Skills' ? <SkillGrid /> : null}
       </div>
     </div>
   )
@@ -142,9 +125,4 @@ function Entries({ items }: { items: Entry[] }) {
       ))}
     </ol>
   )
-}
-
-/** "November 2025" → "Nov 2025" */
-function short(date: string) {
-  return date.replace(/^(\w{3})\w+(?= \d)/, '$1')
 }

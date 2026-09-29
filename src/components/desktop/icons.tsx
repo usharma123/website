@@ -1,101 +1,4 @@
-export type AppId =
-  | 'readme'
-  | 'projects'
-  | 'writing'
-  | 'resume'
-  | 'terminal'
-  | 'blackjack'
-  | 'contact'
-  | 'trash'
-  | 'post'
-export type WinId = AppId | `project:${string}`
-
-type Slot = { left?: string; right?: string; top: string }
-
-export type AppSpec = {
-  title: string
-  /** Label under the desktop icon; apps without one aren't on the desktop. */
-  label?: string
-  icon: IconName
-  /** Real route for this window, so it can be linked to and prerendered. */
-  path?: string
-  w: number
-  h: number
-  /** Where the window sits when it's rendered on the server. */
-  slot?: Slot
-}
-
-export const APPS: Record<AppId, AppSpec> = {
-  readme: {
-    title: 'README.md',
-    label: 'README.md',
-    icon: 'doc',
-    path: '/about',
-    w: 560,
-    h: 640,
-    slot: { left: 'max(128px, calc(50% - 560px))', top: '40px' },
-  },
-  projects: {
-    title: 'Projects',
-    label: 'Projects',
-    icon: 'folder',
-    path: '/work',
-    w: 740,
-    h: 640,
-    slot: { right: 'max(24px, calc(50% - 620px))', top: '96px' },
-  },
-  writing: {
-    title: 'Writing',
-    label: 'Writing',
-    icon: 'notebook',
-    path: '/blog',
-    w: 660,
-    h: 620,
-  },
-  resume: {
-    title: 'Résumé',
-    label: 'Résumé',
-    icon: 'clipboard',
-    path: '/resume',
-    w: 720,
-    h: 660,
-  },
-  terminal: {
-    title: 'Terminal',
-    label: 'Terminal',
-    icon: 'terminal',
-    w: 640,
-    h: 420,
-  },
-  contact: { title: 'Contact', label: 'Contact', icon: 'mail', w: 440, h: 320 },
-  blackjack: { title: 'Blackjack', label: 'Blackjack', icon: 'cards', path: '/blackjack', w: 560, h: 690 },
-  trash: { title: 'Trash', icon: 'trash', w: 480, h: 360 },
-  post: { title: 'Post', icon: 'page', w: 800, h: 1000 },
-}
-
-export const PROJECT_SPEC: Omit<AppSpec, 'title'> = {
-  icon: 'box',
-  w: 620,
-  h: 640,
-}
-
-export const DESKTOP_APPS: AppId[] = [
-  'readme',
-  'projects',
-  'writing',
-  'resume',
-  'terminal',
-  'contact',
-  'blackjack',
-]
-
-export function appForPath(pathname: string): AppId | null {
-  if (pathname.startsWith('/blog/')) return 'post'
-  const hit = (Object.keys(APPS) as AppId[]).find(
-    (id) => APPS[id].path === pathname,
-  )
-  return hit ?? null
-}
+import type { ReactNode } from 'react'
 
 /* ---- Icons ---------------------------------------------------------------
    Drawn on a 48-unit grid with a 2px ink stroke so they read as one set. */
@@ -110,6 +13,7 @@ export type IconName =
   | 'trash'
   | 'page'
   | 'box'
+  | 'home'
   | 'cards'
 
 const S = 'stroke-ink'
@@ -131,7 +35,7 @@ export function Icon({ name, size = 44 }: { name: IconName; size?: number }) {
   )
 }
 
-const ICONS: Record<IconName, React.ReactNode> = {
+const ICONS: Record<IconName, ReactNode> = {
   cards: (
     <>
       <rect x="6" y="6" width="26" height="34" rx="3" transform="rotate(-10 19 23)" className={`fill-marker ${S}`} />
@@ -194,6 +98,14 @@ const ICONS: Record<IconName, React.ReactNode> = {
       <path d="M11 14h26l-3 29H14z" className={`fill-chrome ${S}`} />
       <path d="M8 14h32M19 14V8h10v6" className={S} />
       <path d="M20 20v17M28 20v17" className={S} />
+    </>
+  ),
+  home: (
+    <>
+      <path d="M6 22L24 7l18 15v20H6z" className={`fill-paper ${S}`} />
+      <path d="M6 22L24 7l18 15" className={S} />
+      <path d="M19 42V30h10v12" className={`fill-marker ${S}`} />
+      <path d="M11 22h26" className="stroke-accent" />
     </>
   ),
   box: (

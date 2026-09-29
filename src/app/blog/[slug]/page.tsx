@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { compileMDX } from 'next-mdx-remote/rsc'
 import { notFound } from 'next/navigation'
 import rehypeHighlight from 'rehype-highlight'
@@ -40,6 +41,12 @@ export default async function BlogPost({ params }: Props) {
     },
     components: {
       pre: CodeBlock,
+      a: ({ href, ...props }) =>
+        href?.startsWith('/') ? (
+          <Link href={href} scroll={false} {...props} />
+        ) : (
+          <a href={href} {...props} />
+        ),
       table: (props) => (
         <div className="table-wrap">
           <table {...props} />

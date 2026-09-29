@@ -10,10 +10,9 @@ export type Role = {
 
 const EXPERIENCE: Role[] = [
   {
-    company: 'Xoriant',
-    role: 'Software Engineer',
-    description:
-      'Consulting for CLS Group on application development of their CLSnet platform.',
+    company: 'CLS Group',
+    role: 'Senior Associate – Software Engineer',
+    description: 'Application development on the CLSnet platform.',
     startDate: 'November 2025',
     endDate: 'Present',
     location: 'New Jersey',

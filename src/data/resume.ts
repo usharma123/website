@@ -1,6 +1,7 @@
 export const PROFILE = {
   name: 'Utsav Sharma',
-  headline: "SWE @ Xoriant · Master's Student at UPenn",
+  headline:
+    "Senior Associate – Software Engineer @ CLS · Master's Student at UPenn",
   location: 'Philadelphia, Pennsylvania',
   bio: 'I just like doing things.',
   email: 'utsavsharma124@gmail.com',

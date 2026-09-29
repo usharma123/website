@@ -1,17 +1,15 @@
 ---
-title: "Building My Portfolio & Blog with Next.js and Neobrutalism"
-description: "A detailed walkthrough of how I built this personal website using Next.js, Tailwind, and neobrutalist design."
-pubDate: "2025-07-09"
-tags: ["nextjs", "portfolio", "blog", "neobrutalism", "tutorial"]
+title: 'Building the first version of my portfolio and blog'
+description: 'The original Next.js portfolio: a neobrutalist template, a blue theme, and Markdown posts stored alongside the code.'
+pubDate: '2025-07-09'
+tags: ['nextjs', 'portfolio', 'blog', 'neobrutalism', 'tutorial']
 ---
 
-# Building My Portfolio & Blog with Next.js and Neobrutalism
+This was the first version of my portfolio and blog, built in July 2025. I started from the [neobrutalism portfolio template](https://github.com/neobrutalism-templates/portfolio) and used its [blog template](https://github.com/neobrutalism-templates/blog) as a reference.
 
-Welcome to my first blog post! In this post, I'll document the process of building my personal portfolio and blog using [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.com/), and the [neobrutalism-templates/portfolio](https://github.com/neobrutalism-templates/portfolio) and [neobrutalism-templates/blog](https://github.com/neobrutalism-templates/blog) as inspiration.
+The site has since changed. These examples describe the original implementation; the [desktop redesign](/blog/desktop-os-website) explains the current one.
 
-## 1. Project Setup
-
-I started by cloning the neobrutalism portfolio template:
+## Starting with a template
 
 ```bash
 git clone https://github.com/neobrutalism-templates/portfolio.git blog
@@ -19,9 +17,11 @@ cd blog
 pnpm install
 ```
 
-## 2. Customizing the Theme
+The template gave me a layout to work from while I learned Next.js. I changed the colors, replaced the sample projects, and added a place to publish Markdown posts.
 
-I wanted a sky blue neobrutalist look, so I updated the CSS variables in `globals.css`:
+## Setting the colors
+
+I wanted pale blue backgrounds, dark borders, and offset shadows. The theme used CSS variables in `globals.css`:
 
 ```css
 :root {
@@ -33,37 +33,19 @@ I wanted a sky blue neobrutalist look, so I updated the CSS variables in `global
 }
 ```
 
-## 3. Adding a Blog Section
+## Adding posts
 
-I wanted my blog to match the neobrutalist style. I created a `/blog` route and set up dynamic routing for individual posts:
+The blog index read Markdown files from `src/content/posts`. Each file had frontmatter for its title, publication date, description, and tags. Individual posts used the `/blog/[slug]` route.
 
-```tsx
-// src/app/blog/page.tsx
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import Link from 'next/link';
-
-export default function BlogPage() {
-  // Reads all markdown files in /src/content/posts
-}
-```
-
-Each post is a markdown file in `src/content/posts/` with frontmatter for title, date, and tags.
-
-## 4. Rendering Markdown with Code
-
-To render markdown and code snippets, I used `gray-matter` and `next-mdx-remote`:
+`gray-matter` parsed the frontmatter. `next-mdx-remote` rendered the body, with `rehype-highlight` for code blocks:
 
 ```bash
 pnpm add gray-matter next-mdx-remote
 ```
 
-In the dynamic post page:
-
 ```tsx
 // src/app/blog/[slug]/page.tsx
-import { MDXRemote } from 'next-mdx-remote/rsc';
+import { MDXRemote } from 'next-mdx-remote/rsc'
 
 const mdxContent = (
   <MDXRemote
@@ -74,72 +56,51 @@ const mdxContent = (
       },
     }}
   />
-);
+)
 ```
 
-## 5. Animations with Framer Motion
+Keeping the posts in the repository meant I could review a writing change alongside a code change and publish both through the same build.
 
-To add a smooth expand animation when viewing a blog post, I used Framer Motion in a client component:
+## Animating the reader
+
+The original reader used Framer Motion to expand an article when it opened:
 
 ```tsx
 // src/app/blog/[slug]/BlogPostClient.tsx
-"use client";
-import { motion } from "framer-motion";
+'use client'
+import { motion } from 'framer-motion'
 
 export default function BlogPostClient({ data, children }) {
   return (
     <motion.article
       initial={{ height: 0, opacity: 0 }}
-      animate={{ height: "auto", opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      animate={{ height: 'auto', opacity: 1 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
     >
       {/* ... */}
       {children}
     </motion.article>
-  );
+  )
 }
 ```
 
-## 6. Skills & Projects
+That was a design choice in this version of the site. The desktop redesign uses a different window-opening animation and no longer depends on Framer Motion.
 
-I updated my skills and projects in `src/data/skills.ts` and `src/data/projects.ts` to reflect my real experience and current work.
+## Keeping profile data separate
 
-```ts
-// Example for skills
-const SKILLS = [
-  { field: 'Frontend', skills: [
-    { skill: 'html', icon: SiHtml5 },
-    { skill: 'css', icon: SiCss3 },
-    // ...
-  ]},
-  { field: 'Backend', skills: [
-    { skill: 'nodejs', icon: SiNodedotjs },
-    // ...
-  ]},
-];
-```
+Skills and projects lived in `src/data/skills.ts` and `src/data/projects.ts`. Components read those lists instead of embedding the same information in several pages.
 
-## 7. Home Page Layout
-
-I used a flex layout to place my avatar to the left of my introduction:
+The home page put an avatar beside a short introduction:
 
 ```tsx
-<div className="flex items-start gap-8 font-base mt-12">
-  <img src="/avatar.png" alt="Utsav Sharma Avatar" className="w-56 h-56 ..." />
-  <div>
-    {/* Intro text */}
-  </div>
+<div className="font-base mt-12 flex items-start gap-8">
+  <img src="/avatar.png" alt="Utsav Sharma Avatar" className="h-56 w-56 ..." />
+  <div>{/* Intro text */}</div>
 </div>
 ```
 
-## 8. Final Thoughts
+## What I used it for
 
-I recently started learning **Next.js**, and this is my first attempt at building a simple portfolio site. I wrote everything in **MDX/Markdown** so I could easily include code snippets. For the design, I went with a **neobrutalist** style for a bold, minimal look, and added **Framer Motion** animations to make the site feel more dynamic and engaging. Honestly, it wasn't as hard as I thought!
+I wanted a place to record what I learned during my master's and share small data projects. One early idea was a Markov-process calculator and visualizer, which became [MarkovExplorer](/blog/markov-explorer).
 
-## 9. What's Next?
-
-I'm planning to use this site as a personal journal to document what I learn throughout my Masters, as well as to share mini data projects I work on. One of my goals is to create a **Markov process** calculator and visualizer.
-
----
-
-Thanks for reading! If you have questions or want to see more, check out the **[GitHub repo](https://github.com/usharma123/website/tree/main)** or connect with me on social media.
+[Website source](https://github.com/usharma123/website/tree/main)

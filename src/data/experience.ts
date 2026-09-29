@@ -1,42 +1,73 @@
-const PAST_ROLES: {
+export type Role = {
   company: string
   role: string
   description: string
   startDate: string
   endDate: string
-}[] = [
+  location?: string
+  tags?: string[]
+}
+
+const EXPERIENCE: Role[] = [
   {
-    company: 'Xoriant',
-    role: 'Software Engineer',
-    description:
-      'Consulting for CLS on application development of their CLSnet platform.',
+    company: 'CLS Group',
+    role: 'Senior Associate – Software Engineer',
+    description: 'Application development on the CLSnet platform.',
     startDate: 'November 2025',
     endDate: 'Present',
+    location: 'New Jersey',
+    tags: ['fintech', 'platform'],
   },
   {
-    company: 'Vetra AI',
-    role: 'Co-Founder',
+    company: 'Vetra',
+    role: 'Co-Founder & COO',
     description:
-      'Co-founded Vetra AI, a startup that uses AI to streamline patent and legal diligence, cutting hours of work to minutes.',
+      'Built prototypes for RAG and scraping architectures to streamline agent-based workflows in patent search and litigation, cutting hours of diligence to minutes.',
     startDate: 'April 2024',
     endDate: 'August 2025',
+    location: 'Gainesville, FL',
+    tags: ['rag', 'agents', 'legal-tech', 'startup'],
   },
   {
     company: 'Dream Team Engineering',
     role: 'Vice President',
     description:
-      'Led a cross-functional team of 140+ students in developing a medical devices and software solutions for the Shands Hospital at the University of Florida.',
+      'Led a 140-person team driving design and software projects, evaluating their effectiveness within the UF Health Shands Hospital ecosystem.',
     startDate: 'January 2025',
     endDate: 'May 2025',
+    location: 'Gainesville, FL',
+    tags: ['leadership', 'healthcare'],
+  },
+  {
+    company: 'Dream Team Engineering',
+    role: 'Director of Research Development',
+    description:
+      'Led five research teams, coordinating resources between Shands Hospital and DTE to secure IRB approval for the applications DTE developed.',
+    startDate: 'May 2024',
+    endDate: 'May 2025',
+    location: 'Gainesville, FL',
+    tags: ['research', 'irb'],
   },
   {
     company: 'University of Florida',
-    role: 'Research Assistant',
+    role: 'Undergraduate Teaching Assistant',
     description:
-      'Worked on mutliple projects to develop clinically validated protocols regarding the use of AI in the medical field spanning from medical imaging, decision support systems, computer vision, and more.',
-    startDate: 'January 2023',
-    endDate: 'May 2025',
+      'Taught a biochemistry section of 20 students — lectures, discussion, grading, and one-on-one guidance.',
+    startDate: 'August 2024',
+    endDate: 'December 2024',
+    location: 'Gainesville, FL',
+    tags: ['teaching', 'biochemistry'],
+  },
+  {
+    company: 'Florida International University',
+    role: 'Research Study Assistant',
+    description:
+      'Reviewed 8,000+ scientific articles in COVIDENCE under the PRISMA framework for a systematic review on caregiver burden among parents of transition-age youth with autism.',
+    startDate: 'May 2021',
+    endDate: 'August 2021',
+    location: 'Miami, FL',
+    tags: ['research', 'systematic-review'],
   },
 ]
 
-export default PAST_ROLES
+export default EXPERIENCE

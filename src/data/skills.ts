@@ -1,49 +1,55 @@
-import {
-  type IconType,
-  SiCss,
-  SiHtml5,
-  SiJavascript,
-  SiNextdotjs,
-  SiReact,
-  SiTailwindcss,
-  SiNodedotjs,
-  SiPostgresql,
-  SiDocker,
-  SiPython,
-  SiOpenjdk,
-  SiRust,
-  SiSolid,
-} from '@icons-pack/react-simple-icons'
-import { Cloud, LucideIcon } from 'lucide-react'
+import type { BrandIconKey } from './brand-icons'
 
-type SkillIcon = IconType | LucideIcon
+export type Skill = {
+  name: string
+  /** Brand mark, when one exists; otherwise the skill gets a monogram. */
+  icon?: BrandIconKey
+}
 
-const SKILLS: {
-  field: string
-  skills: { skill: string; icon: SkillIcon }[]
-}[] = [
+const SKILLS: { field: string; skills: Skill[] }[] = [
   {
     field: 'Frontend',
     skills: [
-      { skill: 'html', icon: SiHtml5 },
-      { skill: 'css', icon: SiCss },
-      { skill: 'javascript', icon: SiJavascript },
-      { skill: 'react', icon: SiReact },
-      { skill: 'solidjs', icon: SiSolid },
-      { skill: 'tailwind', icon: SiTailwindcss },
-      { skill: 'nextjs', icon: SiNextdotjs },
+      { name: 'TypeScript', icon: 'typescript' },
+      { name: 'JavaScript', icon: 'javascript' },
+      { name: 'React', icon: 'react' },
+      { name: 'Next.js', icon: 'nextjs' },
+      { name: 'Tailwind CSS', icon: 'tailwind' },
+      { name: 'SolidJS', icon: 'solid' },
+      { name: 'TanStack', icon: 'tanstack' },
+      { name: 'StyleX' },
+      { name: 'HTML', icon: 'html' },
+      { name: 'CSS', icon: 'css' },
     ],
   },
   {
-    field: 'Backend',
+    field: 'Backend & infra',
     skills: [
-      { skill: 'nodejs', icon: SiNodedotjs },
-      { skill: 'python', icon: SiPython },
-      { skill: 'java', icon: SiOpenjdk },
-      { skill: 'rust', icon: SiRust },
-      { skill: 'postgresql', icon: SiPostgresql },
-      { skill: 'docker', icon: SiDocker },
-      { skill: 'aws', icon: Cloud },
+      { name: 'Node.js', icon: 'node' },
+      { name: 'Bun', icon: 'bun' },
+      { name: 'Python', icon: 'python' },
+      { name: 'Java', icon: 'java' },
+      { name: 'Spring Boot', icon: 'spring' },
+      { name: 'Rust', icon: 'rust' },
+      { name: 'PostgreSQL', icon: 'postgres' },
+      { name: 'DuckDB', icon: 'duckdb' },
+      { name: 'Convex', icon: 'convex' },
+      { name: 'Docker', icon: 'docker' },
+      { name: 'AWS' },
+      { name: 'OpenTelemetry', icon: 'otel' },
+    ],
+  },
+  {
+    field: 'ML & research',
+    skills: [
+      { name: 'PyTorch', icon: 'pytorch' },
+      { name: 'MONAI' },
+      { name: 'OpenCV', icon: 'opencv' },
+      { name: 'MediaPipe', icon: 'mediapipe' },
+      { name: 'XGBoost' },
+      { name: 'Diffusion models' },
+      { name: 'GANs' },
+      { name: 'RAG' },
     ],
   },
 ]

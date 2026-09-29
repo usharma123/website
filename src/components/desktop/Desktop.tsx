@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   createContext,
@@ -43,6 +44,8 @@ import Resume from './windows/Resume'
 import Terminal from './windows/Terminal'
 import Trash from './windows/Trash'
 import Writing from './windows/Writing'
+
+const Blackjack = dynamic(() => import('./windows/Blackjack'))
 
 const TASKBAR = 44
 
@@ -268,6 +271,8 @@ function AppBody({ id }: { id: AppId }) {
       return <Terminal />
     case 'contact':
       return <Contact />
+    case 'blackjack':
+      return <Blackjack />
     case 'trash':
       return <Trash />
     case 'post':
@@ -292,7 +297,7 @@ function DesktopIcon({
       className="group flex w-[88px] flex-col items-center gap-1 rounded-md p-1.5 text-center focus-visible:outline-offset-0"
     >
       <span className="transition-transform group-hover:-translate-y-0.5 group-active:translate-y-0">
-        <Icon name={spec.icon} />
+        <Icon name={spec.icon} size={32} />
       </span>
       <span className="group-hover:bg-ink group-hover:text-paper group-focus-visible:bg-ink group-focus-visible:text-paper rounded-sm px-1 text-[12.5px] leading-tight font-medium">
         {label ?? spec.label}

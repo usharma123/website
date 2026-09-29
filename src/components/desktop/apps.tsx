@@ -4,6 +4,7 @@ export type AppId =
   | 'writing'
   | 'resume'
   | 'terminal'
+  | 'blackjack'
   | 'contact'
   | 'trash'
   | 'post'
@@ -67,6 +68,7 @@ export const APPS: Record<AppId, AppSpec> = {
     h: 420,
   },
   contact: { title: 'Contact', label: 'Contact', icon: 'mail', w: 440, h: 320 },
+  blackjack: { title: 'Blackjack', label: 'Blackjack', icon: 'cards', path: '/blackjack', w: 560, h: 690 },
   trash: { title: 'Trash', icon: 'trash', w: 480, h: 360 },
   post: { title: 'Post', icon: 'page', w: 800, h: 1000 },
 }
@@ -84,6 +86,7 @@ export const DESKTOP_APPS: AppId[] = [
   'resume',
   'terminal',
   'contact',
+  'blackjack',
 ]
 
 export function appForPath(pathname: string): AppId | null {
@@ -107,6 +110,7 @@ export type IconName =
   | 'trash'
   | 'page'
   | 'box'
+  | 'cards'
 
 const S = 'stroke-ink'
 
@@ -128,6 +132,14 @@ export function Icon({ name, size = 44 }: { name: IconName; size?: number }) {
 }
 
 const ICONS: Record<IconName, React.ReactNode> = {
+  cards: (
+    <>
+      <rect x="6" y="6" width="26" height="34" rx="3" transform="rotate(-10 19 23)" className={`fill-marker ${S}`} />
+      <rect x="17" y="9" width="26" height="34" rx="3" className={`fill-paper ${S}`} />
+      <path d="M30 17c-2 3-7 5-7 8a4 4 0 0 0 7 2 4 4 0 0 0 7-2c0-3-5-5-7-8z" className="fill-ink" />
+      <path d="M30 26v8m-4 0h8" className={S} />
+    </>
+  ),
   doc: (
     <>
       <path d="M11 5h18l9 9v29H11z" className={`fill-paper ${S}`} />

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'About',
-  description: "Who I am and what I'm working on.",
+  title: 'Résumé',
+  description: 'Work, research, and education.',
 }
 
 // The desktop renders this window from the pathname; the page only sets metadata.

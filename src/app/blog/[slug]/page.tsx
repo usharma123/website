@@ -1,54 +1,56 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import rehypeHighlight from 'rehype-highlight';
-import remarkGfm from 'remark-gfm';
-import { MDXRemote } from 'next-mdx-remote/rsc';
-import BlogPostClient from "./BlogPostClient";
-import CopyCodeBlock from "@/components/CopyCodeBlock";
+import type { Metadata } from 'next'
+import { MDXRemote } from 'next-mdx-remote/rsc'
+import { notFound } from 'next/navigation'
+import rehypeHighlight from 'rehype-highlight'
+import remarkGfm from 'remark-gfm'
 
-interface PageProps {
-  params: Promise<{ slug: string }>;
+import CodeBlock from '@/components/CodeBlock'
+import { PostHeader, PostMount } from '@/components/desktop/windows/Post'
+import { getPost, getPosts } from '@/lib/posts'
+
+type Props = { params: Promise<{ slug: string }> }
+
+export const dynamicParams = false
+
+export function generateStaticParams() {
+  return getPosts().map((p) => ({ slug: p.slug }))
 }
 
-export async function generateStaticParams() {
-  const postsDir = path.join(process.cwd(), 'src/content/posts');
-  const files = fs.readdirSync(postsDir);
-  return files.map((file) => ({
-    slug: file.replace(/\.mdx?$/, ''),
-  }));
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const post = getPost((await params).slug)
+  return post
+    ? { title: post.meta.title, description: post.meta.description }
+    : {}
 }
 
-export default async function BlogPostPage({ params }: PageProps) {
-  const { slug } = await params;
-  const filePath = path.join(process.cwd(), 'src/content/posts', `${slug}.md`);
-  const source = fs.readFileSync(filePath, 'utf8');
-  const { content, data } = matter(source);
-
-  // Render MDX content as a React node
-  const mdxContent = (
-    <MDXRemote
-      source={content}
-      options={{
-        mdxOptions: {
-          remarkPlugins: [remarkGfm],
-          rehypePlugins: [rehypeHighlight],
-        },
-      }}
-      components={{
-        pre: CopyCodeBlock,
-        table: (props) => (
-          <div className="markdown-table-wrap">
-            <table {...props} />
-          </div>
-        ),
-      }}
-    />
-  );
+export default async function BlogPost({ params }: Props) {
+  const { slug } = await params
+  const post = getPost(slug)
+  if (!post) notFound()
 
   return (
-    <main className="max-w-3xl mx-auto py-12 px-4">
-      <BlogPostClient data={data}>{mdxContent}</BlogPostClient>
-    </main>
-  );
+    <article className="mx-auto max-w-[680px] px-6 py-8 sm:px-10">
+      <PostMount slug={slug} />
+      <PostHeader meta={post.meta} />
+      <div className="prose">
+        <MDXRemote
+          source={post.content}
+          options={{
+            mdxOptions: {
+              remarkPlugins: [remarkGfm],
+              rehypePlugins: [rehypeHighlight],
+            },
+          }}
+          components={{
+            pre: CodeBlock,
+            table: (props) => (
+              <div className="table-wrap">
+                <table {...props} />
+              </div>
+            ),
+          }}
+        />
+      </div>
+    </article>
+  )
 }

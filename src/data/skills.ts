@@ -1,49 +1,32 @@
-import {
-  type IconType,
-  SiCss,
-  SiHtml5,
-  SiJavascript,
-  SiNextdotjs,
-  SiReact,
-  SiTailwindcss,
-  SiNodedotjs,
-  SiPostgresql,
-  SiDocker,
-  SiPython,
-  SiOpenjdk,
-  SiRust,
-  SiSolid,
-} from '@icons-pack/react-simple-icons'
-import { Cloud, LucideIcon } from 'lucide-react'
-
-type SkillIcon = IconType | LucideIcon
-
-const SKILLS: {
-  field: string
-  skills: { skill: string; icon: SkillIcon }[]
-}[] = [
+const SKILLS: { field: string; skills: string[] }[] = [
   {
     field: 'Frontend',
     skills: [
-      { skill: 'html', icon: SiHtml5 },
-      { skill: 'css', icon: SiCss },
-      { skill: 'javascript', icon: SiJavascript },
-      { skill: 'react', icon: SiReact },
-      { skill: 'solidjs', icon: SiSolid },
-      { skill: 'tailwind', icon: SiTailwindcss },
-      { skill: 'nextjs', icon: SiNextdotjs },
+      'html',
+      'css',
+      'javascript',
+      'typescript',
+      'react',
+      'solidjs',
+      'tanstack',
+      'stylex',
     ],
   },
   {
     field: 'Backend',
+    skills: ['nodejs', 'python', 'java', 'rust', 'postgresql', 'docker', 'aws'],
+  },
+  {
+    field: 'ML & Research',
     skills: [
-      { skill: 'nodejs', icon: SiNodedotjs },
-      { skill: 'python', icon: SiPython },
-      { skill: 'java', icon: SiOpenjdk },
-      { skill: 'rust', icon: SiRust },
-      { skill: 'postgresql', icon: SiPostgresql },
-      { skill: 'docker', icon: SiDocker },
-      { skill: 'aws', icon: Cloud },
+      'pytorch',
+      'monai',
+      'opencv',
+      'mediapipe',
+      'xgboost',
+      'diffusion-models',
+      'gans',
+      'rag',
     ],
   },
 ]

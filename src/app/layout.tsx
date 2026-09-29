@@ -1,47 +1,36 @@
 import type { Metadata } from 'next'
-import { Bricolage_Grotesque, DM_Sans } from 'next/font/google'
+import { IBM_Plex_Mono, Instrument_Sans } from 'next/font/google'
+
+import Desktop from '@/components/desktop/Desktop'
+import { PROFILE } from '@/data/resume'
+import { getPosts } from '@/lib/posts'
 import './globals.css'
-import Nav from '@/components/nav'
-import { ViewTransitions } from 'next-view-transitions'
-import { ThemeProvider } from '@/components/theme-provider'
 
-const bricolage = Bricolage_Grotesque({
+const sans = Instrument_Sans({
   subsets: ['latin'],
-  variable: '--font-heading',
-  weight: ['400', '500', '600', '700', '800']
+  variable: '--font-instrument',
 })
-
-const dmSans = DM_Sans({
+const mono = IBM_Plex_Mono({
   subsets: ['latin'],
-  variable: '--font-body',
-  weight: ['400', '500', '600', '700']
+  weight: ['400', '500', '600'],
+  variable: '--font-plex-mono',
 })
 
 export const metadata: Metadata = {
-  title: 'Utsav Sharma',
+  title: { default: PROFILE.name, template: `%s — ${PROFILE.name}` },
+  description: PROFILE.headline,
 }
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
-    <ViewTransitions>
-      <html suppressHydrationWarning lang="en">
-        <body className={`${bricolage.variable} ${dmSans.variable}`} suppressHydrationWarning={true}>
-          <ThemeProvider attribute="class" disableTransitionOnChange>
-            {/* Animated Grid Background */}
-            <div className="animated-grid-bg" />
-            {/* Noise Texture Overlay */}
-            <div className="noise-overlay" />
-            <Nav />
-            <div className="text-foreground mx-auto w-[780px] max-w-full px-6 pt-20 pb-12 relative z-10">
-              {children}
-            </div>
-          </ThemeProvider>
-        </body>
-      </html>
-    </ViewTransitions>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+      <body>
+        <Desktop posts={getPosts()}>{children}</Desktop>
+      </body>
+    </html>
   )
 }

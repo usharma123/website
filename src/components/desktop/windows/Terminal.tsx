@@ -18,7 +18,7 @@ type Line = { id: number; input?: string; output?: ReactNode }
 type Ctx = ReturnType<typeof useDesktop>
 
 const PROMPT = 'utsav@desk ~ %'
-const dim = (s: ReactNode) => <span className="text-[#8a857a]">{s}</span>
+const dim = (s: ReactNode) => <span className="text-[#87948c]">{s}</span>
 
 const COMMANDS: Record<
   string,
@@ -194,7 +194,7 @@ export default function Terminal() {
 
   return (
     <div
-      className="bg-ink min-h-full p-4 font-mono text-[13px] leading-relaxed text-[#ede9dd]"
+      className="bg-ink min-h-full p-4 font-mono text-[13px] leading-relaxed text-[#e6ede7]"
       onClick={() => input.current?.focus()}
     >
       {lines.map((l) => (

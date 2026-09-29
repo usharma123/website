@@ -145,7 +145,7 @@ const ICONS: Record<IconName, React.ReactNode> = {
   folder: (
     <>
       <path d="M4 11h14l4 5h22v26H4z" className={`fill-accent ${S}`} />
-      <path d="M4 19h40v23H4z" className={`fill-[#5667e6] ${S}`} />
+      <path d="M4 19h40v23H4z" className={`fill-[#3f8f71] ${S}`} />
     </>
   ),
   notebook: (
@@ -158,7 +158,7 @@ const ICONS: Record<IconName, React.ReactNode> = {
   ),
   clipboard: (
     <>
-      <path d="M9 8h30v35H9z" className={`fill-[#c8ae80] ${S}`} />
+      <path d="M9 8h30v35H9z" className={`fill-clay ${S}`} />
       <path d="M13 14h22v25H13z" className={`fill-paper ${S}`} />
       <path d="M18 5h12v6H18z" className={`fill-chrome ${S}`} />
       <path d="M17 21h14M17 27h14M17 33h8" className={S} />
@@ -186,7 +186,7 @@ const ICONS: Record<IconName, React.ReactNode> = {
   ),
   box: (
     <>
-      <path d="M24 5l18 9v20l-18 9-18-9V14z" className={`fill-sage ${S}`} />
+      <path d="M24 5l18 9v20l-18 9-18-9V14z" className={`fill-clay ${S}`} />
       <path d="M6 14l18 9 18-9M24 23v20" className={S} />
     </>
   ),

@@ -1,16 +1,16 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-desk: #e4e0d3;
-  --color-paper: #fbfaf5;
-  --color-chrome: #eeeadd;
-  --color-ink: #1b1a17;
-  --color-muted: #6b665a;
-  --color-rule: #d8d2c1;
-  --color-accent: #2438d8;
-  --color-accent-soft: #dfe3fb;
-  --color-marker: #f4d35e;
-  --color-sage: #cfdac4;
+  --color-desk: #c9d4c6;
+  --color-paper: #fbfbf8;
+  --color-chrome: #e7ece3;
+  --color-ink: #17201b;
+  --color-muted: #58635c;
+  --color-rule: #d2dace;
+  --color-accent: #0f6a4c;
+  --color-accent-soft: #dcede4;
+  --color-marker: #cdbdff;
+  --color-clay: #e9c6ad;
 
   --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
   --font-mono:
@@ -43,14 +43,14 @@ body {
 
 .wallpaper {
   background-color: var(--color-desk);
-  background-image: radial-gradient(rgb(27 26 23 / 0.16) 1px, transparent 1px);
+  background-image: radial-gradient(rgb(23 32 27 / 0.16) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 
 .win {
   box-shadow:
-    0 1px 0 rgb(27 26 23 / 0.06),
-    0 24px 48px -24px rgb(27 26 23 / 0.45);
+    0 1px 0 rgb(23 32 27 / 0.06),
+    0 24px 48px -24px rgb(23 32 27 / 0.45);
   animation: win-open 140ms ease-out;
 }
 
@@ -163,7 +163,7 @@ body {
 .prose pre {
   background: var(--color-ink);
   border-radius: 6px;
-  color: #ede9dd;
+  color: #e6ede7;
   font-family: var(--font-mono);
   font-size: 13.5px;
   line-height: 1.6;
@@ -206,7 +206,7 @@ body {
 /* ---- Syntax highlighting (hljs classes from rehype-highlight) ---- */
 .hljs-comment,
 .hljs-quote {
-  color: #8a857a;
+  color: #87948c;
   font-style: italic;
 }
 .hljs-keyword,
@@ -222,12 +222,12 @@ body {
 }
 .hljs-number,
 .hljs-symbol {
-  color: #f4d35e;
+  color: #e9c6ad;
 }
 .hljs-title,
 .hljs-name,
 .hljs-section {
-  color: #9fb0ff;
+  color: #cdbdff;
 }
 .hljs-built_in,
 .hljs-variable,
@@ -283,6 +283,6 @@ body {
 }
 
 .win * {
-  scrollbar-color: rgb(27 26 23 / 0.35) transparent;
+  scrollbar-color: rgb(23 32 27 / 0.35) transparent;
   scrollbar-width: thin;
 }

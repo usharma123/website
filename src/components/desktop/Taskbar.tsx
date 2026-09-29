@@ -107,7 +107,7 @@ function StartMenu() {
       </button>
 
       {isOpen ? (
-        <div className="border-ink bg-paper absolute bottom-11 left-0 w-64 rounded-lg border-[1.5px] p-1.5 shadow-[0_24px_48px_-24px_rgb(27_26_23/0.45)]">
+        <div className="border-ink bg-paper absolute bottom-11 left-0 w-64 rounded-lg border-[1.5px] p-1.5 shadow-[0_24px_48px_-24px_rgb(23_32_27/0.45)]">
           <div className="border-rule border-b-[1.5px] border-dashed px-2 pt-1 pb-2">
             <div className="font-semibold">{PROFILE.name}</div>
             <div className="text-muted text-[12.5px]">{PROFILE.headline}</div>

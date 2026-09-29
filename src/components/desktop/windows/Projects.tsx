@@ -158,7 +158,7 @@ export function Preview({
   const bg: Record<Project['kind'], string> = {
     agents: 'bg-accent text-paper',
     terminal: 'bg-ink text-paper',
-    web: 'bg-sage text-ink',
+    web: 'bg-clay text-ink',
     research: 'bg-marker text-ink',
   }
   return (

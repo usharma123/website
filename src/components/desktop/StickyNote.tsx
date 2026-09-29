@@ -13,7 +13,7 @@ export default function StickyNote({ latest }: { latest?: PostMeta }) {
   const school = EDUCATION[0]
 
   return (
-    <aside className="border-ink bg-marker absolute top-[300px] left-4 w-[calc(100%-2rem)] max-w-[260px] rotate-[-1.5deg] border-[1.5px] p-4 font-mono text-[12.5px] leading-relaxed shadow-[0_12px_24px_-12px_rgb(27_26_23/0.5)] md:top-auto md:bottom-[64px] md:left-4 md:w-[240px] md:rotate-[1.5deg]">
+    <aside className="border-ink bg-marker absolute top-[300px] left-4 w-[calc(100%-2rem)] max-w-[260px] rotate-[-1.5deg] border-[1.5px] p-4 font-mono text-[12.5px] leading-relaxed shadow-[0_12px_24px_-12px_rgb(23_32_27/0.5)] md:top-auto md:bottom-[64px] md:left-4 md:w-[240px] md:rotate-[1.5deg]">
       <div className="mb-2 font-semibold">now:</div>
       <ul className="space-y-1.5">
         <li>

@@ -1,82 +1,59 @@
 ---
-title: "Building MarkovExplorer: Visualizing and Optimizing MDPs"
-description: "A deep dive into building an interactive web application for visualizing and optimizing Markov Decision Processes with real-time simulations and reinforcement learning algorithms."
-pubDate: "2025-09-04"
-tags: ["reinforcement-learning", "web-development", "visualization", "nextjs", "typescript", "mdp"]
+title: 'Building MarkovExplorer to visualize and optimize MDPs'
+description: 'A browser tool for editing Markov decision processes, running simulations, and comparing policies.'
+pubDate: '2025-09-04'
+tags:
+  [
+    'reinforcement-learning',
+    'web-development',
+    'visualization',
+    'nextjs',
+    'typescript',
+    'mdp',
+  ]
 ---
 
-# Building MarkovExplorer: Visualizing and Optimizing MDPs
+A [Veritasium video](https://www.youtube.com/watch?v=KZeIEiBrT_w&t=487s) sent me down a Markov-chain rabbit hole. I wanted to change a transition probability and see what happened, rather than work through each example on paper. That grew into MarkovExplorer, a browser app for building and simulating Markov decision processes.
 
-## Introduction
+## Build a model, then test a policy
 
-I watched a recent **[Veritassium](https://www.youtube.com/watch?v=KZeIEiBrT_w&t=487s)** video that inspired me to try to visualize any type of markov chain and this grew as a personal project to make Markov Decision Processes (MDPs) more approachable. While textbooks explain the theory, it can be hard to see how individual transitions and rewards add up. I wanted a tool that lets me build an MDP visually, run simulations, and watch reinforcement-learning algorithms improve a policy in real time. That idea grew into MarkovExplorer, a web application that mixes a drag-and-drop interface with a robust simulation and optimization engine.
+The editor lets me create states, actions, rewards, and transitions. A graph shows their connections and the interface flags invalid configurations.
 
-&nbsp;
+Once the model is set up, I can run Monte Carlo episodes and inspect reward distributions, terminal states, action usage, and common paths. The optimizer then tries value iteration, policy iteration, Q-learning, or Monte Carlo policy search. The interface compares the resulting policy with the baseline.
 
-## What It Does
+Charts make the differences easier to inspect. An AI interpreter also summarizes trends, but the simulation results remain available to check against its explanation.
 
-The application focuses on three core tasks:
+## Project structure
 
-1. **MDP Configuration & Visualization** – An interactive builder lets you create states, actions and transitions. A dynamic graph shows how everything connects and validates the model as you go.
-2. **Monte Carlo Simulation** – With the press of a button you can simulate thousands of episodes. The tool reports distributions of rewards, terminal states, action usage and common paths.
-3. **Agent Optimization** – A built-in optimizer runs value iteration, policy iteration, Q-learning and Monte Carlo policy search. It compares baseline and optimized policies and even rates the confidence of the results.
+I built this version with Next.js 14 and TypeScript. The frontend lives in `mdp-viz`:
 
-On top of that, charts and summaries give deeper insight: histograms for reward distributions, pie charts for terminal states and transition-frequency analyses, all generated in real time. An AI-powered interpreter highlights interesting trends or potential issues in the results.
-
-## Building the Application
-
-MarkovExplorer lives in a Next.js 14 + TypeScript environment. The `mdp-viz` directory holds the entire frontend:
-
-| Directory | Contents |
-| --- | --- |
-| `src/app/` | Next.js routes |
+| Directory         | Contents                             |
+| ----------------- | ------------------------------------ |
+| `src/app/`        | Next.js routes                       |
 | `src/components/` | Graphs, configurator, and results UI |
-| `src/lib/` | Simulation and optimization logic |
-| `src/types/` | Shared TypeScript definitions |
+| `src/lib/`        | Simulation and optimization logic    |
+| `src/types/`      | Shared TypeScript definitions        |
 
-### Core Libraries
+React and Tailwind handle the interface, Chart.js and Recharts draw the charts, and `vis-network` renders the state graph. Zod validates model inputs at runtime.
 
-- **Next.js & React** for the interface.
-- **Tailwind CSS** for styling.
-- **Chart.js and recharts** for visualizations.
-- **Zod** for runtime validation.
-- **vis-network** to render the MDP graph.
+## Simulation
 
-### Simulation Engine
+`lib/sim.ts` runs episodes with a configurable starting state, episode count, and step limit. It records cumulative reward, path length, state transitions, and action frequencies. Those records feed the charts and summary statistics.
 
-The simulation lives in `lib/sim.ts`. It executes episodic Monte Carlo runs with configurable parameters such as episode count, maximum steps and starting state. During each run it tracks:
+The step limit matters for models that can loop without reaching a terminal state. A run that stops at that limit should be interpreted differently from one that finishes normally.
 
-- cumulative reward,
-- path length,
-- state transitions,
-- action frequencies.
+## Optimization
 
-The results feed the charts and statistics in the UI.
+`lib/optimizer.ts` tries the supported planning and learning methods, then evaluates their policies with fresh simulations. `AgentOptimizer.tsx` shows progress and the final comparison.
 
-### Optimization Engine
+Those extra runs help check how a policy behaves under the configured model. They don't establish that the model describes the real world, and a confidence score needs to be read alongside the episode count and variation in outcomes.
 
-The optimizer (`lib/optimizer.ts`) tries multiple strategies automatically:
+## Making experiments easier
 
-- **Value Iteration** and **Policy Iteration** for tabular planning.
-- **Q-Learning** for model-free improvement.
-- **Monte Carlo Policy Search** for direct policy optimization.
+Presets let me revisit a model without entering every transition again. Immediate validation catches configuration mistakes before a simulation starts. The graph and result views let me move between the structure of a model and the behavior it produces.
 
-Each method is validated by running fresh simulations, and the best policy is presented with a confidence score. The UI component `AgentOptimizer.tsx` shows the step-by-step progress and final evaluation.
+The most useful part has been seeing how an apparently small change, such as a discount factor or transition probability, alters a policy. TypeScript catches mistakes in the implementation; runtime validation catches mistakes in the model data. Both are needed.
 
-### User Experience
+## What I want to add
 
-Everything revolves around feedback. The interface highlights configuration errors immediately, updates charts live and keeps controls responsive on mobile screens. Saving and loading presets makes experimentation quick, and the 3D graph view gives a tangible sense of navigating a state space.
-
-## Lessons Learned
-
-- **Interactive visuals make theory concrete** – Seeing an MDP evolve on-screen clarifies abstract concepts like discount factors and policy convergence.
-- **Validation is key** – Running Monte Carlo tests after theoretical optimization prevents overfitting to the model.
-- **TypeScript + Zod** – Static and runtime type checks eliminated whole classes of bugs early.
-
-## What's Next
-
-The roadmap includes gap minimization to better align theoretical and empirical results, export/import of models and richer policy comparison tools. Eventually I'd like to support multi-objective optimization and advanced visualizations such as animated 3D trajectories.
-
----
-
-MarkovExplorer shows that reinforcement learning concepts don't have to stay in research papers. With a browser and some curiosity, anyone can explore how intelligent agents learn to act.
+I want better comparisons between theoretical and simulated results, richer policy comparisons, and model import and export. Multi-objective optimization and animated 3D trajectories are longer-term ideas.

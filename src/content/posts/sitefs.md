@@ -1,35 +1,30 @@
 ---
-title: "SiteFS: A CLI-First QA Agent Runtime for the Web"
-description: "Two layers — a live accessibility-tree shell and persistent /site evidence — for agent-driven QA, crawl, and CI-grade reports."
-pubDate: "2026-06-02"
-tags: ["qa", "playwright", "cli", "accessibility", "mcp", "testing", "typescript"]
+title: 'SiteFS: a browser shell with saved QA evidence'
+description: 'Navigating the accessibility tree with shell commands and saving snapshots, checks, and diffs for later review.'
+pubDate: '2026-06-02'
+tags:
+  ['qa', 'playwright', 'cli', 'accessibility', 'mcp', 'testing', 'typescript']
 ---
 
-Browser QA tools usually fall into two camps: brittle Playwright scripts that break when a button moves, or opaque automation that agents can't inspect mid-run. I wanted something in between — a runtime where an agent (or a human) can `ls`, `cd`, `grep`, and `click` through a website the same way they'd navigate a filesystem, with durable evidence written to disk for CI and review.
+When an agent operates a browser, I want to inspect what it can see and keep the evidence after the run. A successful click alone doesn't tell me what changed on the page.
 
-That's **SiteFS**: a CLI-first QA agent runtime with two cooperating layers — a live accessibility-tree shell and a persistent `/site` evidence store.
+SiteFS gives the agent a shell over the browser's accessibility tree. It can navigate with `ls`, `cd`, `find`, and `grep`, then save snapshots and reports in a session directory.
 
-**Repo:** [github.com/usharma123/SiteFS](https://github.com/usharma123/SiteFS)
+[Source code](https://github.com/usharma123/SiteFS)
 
-## Why a Filesystem Metaphor?
+## Live state and saved evidence
 
-Playwright is powerful but opaque to agents. Sending `page.click('#submit')` gives no intermediate structure — just success or failure. Agents need navigable state: what's on this page, where can I go, what changed since the last snapshot?
+SiteFS maps interactive elements to virtual paths. The live tree answers questions about the current page; the files under `/site` preserve what happened during a run.
 
-SiteFS maps the browser's accessibility tree into a virtual filesystem. Each interactive element gets a path. Commands like `ls`, `cd`, `find`, and `grep` operate on that tree — the same primitives agents already understand from code exploration.
-
-The second layer persists everything under `/site`: snapshots, axe results, link checks, crawl manifests, visual diffs, and viewer manifests. CI gets artifacts; humans get a local viewer.
-
-## Two-Layer Design
-
-| Layer | Commands or artifacts | Connection |
-| --- | --- | --- |
+| Layer                    | Commands or artifacts                               | Connection                                   |
+| ------------------------ | --------------------------------------------------- | -------------------------------------------- |
 | Live accessibility shell | `tabs`, `here`, `ls`, `cd`, `click`, `find`, `grep` | Reads and acts through the Playwright worker |
-| Persistent evidence | Snapshots, reports, crawl results, diffs | Saves worker output in the session directory |
-| Local viewer | `viewer-manifest.json` | Opens saved runs and diffs |
+| Persistent evidence      | Snapshots, reports, crawl results, diffs            | Saves worker output in the session directory |
+| Local viewer             | `viewer-manifest.json`                              | Opens saved runs and diffs                   |
 
-### Layer 1: Live AX Shell
+## Exploring a page
 
-Inspired by DOMShell-style navigation, the live shell exposes custom commands via `just-bash`:
+The shell exposes browser commands through `just-bash`:
 
 ```bash
 sitefs shell --session .sitefs --headed
@@ -44,79 +39,73 @@ grep "Sign up"
 web check-all
 ```
 
-Under the hood, `@sitefs/axfs` converts the Playwright CDP accessibility tree into virtual paths. `@sitefs/live` dispatches commands through `BrowserHost`. Write actions can auto-snapshot to `/site/current`.
+`@sitefs/axfs` converts the accessibility tree obtained through Playwright's CDP connection into virtual paths. `@sitefs/live` dispatches commands through `BrowserHost`. Write actions can save a snapshot to `/site/current`.
 
-Shell extras match DOMShell ergonomics: `goto` (alias for `navigate`), `cd tabs/github` (substring tab match), `ls --after`/`--before`/`--meta`, `find --content`, `extract_table [--format csv]`, and `!n` history replay.
+Other commands include `goto`, substring matching for `cd tabs/github`, metadata and ordering flags on `ls`, `find --content`, `extract_table`, and `!n` history replay.
 
-### Layer 2: Evidence `/site`
-
-Every session gets a durable directory:
+## What a session saves
 
 Paths below are relative to the session directory.
 
-| Path | Contents |
-| --- | --- |
-| `config.json` | Session settings |
-| `viewer-manifest.json` | Index used by the local viewer |
-| `site/README.md` | Session overview |
-| `site/current/` | Latest snapshot |
-| `site/history/<snapshotId>/` | Immutable snapshots |
-| `site/pages/<slug>/` | Named page copies and `issues.json` |
-| `site/reports/` | Markdown and JSON reports, plus diffs |
-| `site/crawl/manifest.json` | Crawl results |
-| `site/flows/<name>.json` | Saved flows |
+| Path                         | Contents                              |
+| ---------------------------- | ------------------------------------- |
+| `config.json`                | Session settings                      |
+| `viewer-manifest.json`       | Index used by the local viewer        |
+| `site/README.md`             | Session overview                      |
+| `site/current/`              | Latest snapshot                       |
+| `site/history/<snapshotId>/` | Immutable snapshots                   |
+| `site/pages/<slug>/`         | Named page copies and `issues.json`   |
+| `site/reports/`              | Markdown and JSON reports, plus diffs |
+| `site/crawl/manifest.json`   | Crawl results                         |
+| `site/flows/<name>.json`     | Saved flows                           |
 
-`@sitefs/sitefs` handles snapshot I/O, page diffs, run registry, and viewer manifests. `@sitefs/qa` runs static checks, link probes, and report builders. Two diff modules serve different needs:
+`@sitefs/sitefs` handles snapshot storage, the run registry, and viewer manifests. `@sitefs/qa` runs checks and builds reports.
 
-- **`snapshot-diff`** — compares persisted `PageSnapshot` (links, buttons, screenshots)
-- **`filesystem-diff`** — compares live `AxFilesystem` trees in real time
+There are two kinds of diff. `snapshot-diff` compares saved `PageSnapshot` records, including links, buttons, and screenshots. `filesystem-diff` compares live `AxFilesystem` trees.
 
-## Monorepo Packages
+## Package boundaries
 
-| Package | Role |
-|---------|------|
-| `sitefs` (cli) | Entrypoints: `shell`, `mcp`, `test`, `view`, `doctor` |
-| `@sitefs/session` | `createSessionContext()` — store, worker, `WebRuntime`, `BrowserHost` |
-| `@sitefs/live` | Live AX shell and command dispatch |
-| `@sitefs/commands` | Shared command catalog for shell, host, and MCP |
-| `@sitefs/browser` | Playwright backend + worker subprocess |
-| `@sitefs/sitefs` | Session disk layout, snapshots, registry |
-| `@sitefs/axfs` | CDP tree → virtual filesystem |
-| `@sitefs/qa` | QA checks and report builders |
-| `@sitefs/viewer` | Local React UI for runs and diffs |
+| Package            | Role                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| `sitefs` (cli)     | Entrypoints: `shell`, `mcp`, `test`, `view`, `doctor`                                |
+| `@sitefs/session`  | `createSessionContext()` connects the store, worker, `WebRuntime`, and `BrowserHost` |
+| `@sitefs/live`     | Live AX shell and command dispatch                                                   |
+| `@sitefs/commands` | Shared command catalog for shell, host, and MCP                                      |
+| `@sitefs/browser`  | Playwright backend + worker subprocess                                               |
+| `@sitefs/sitefs`   | Session disk layout, snapshots, registry                                             |
+| `@sitefs/axfs`     | CDP tree → virtual filesystem                                                        |
+| `@sitefs/qa`       | QA checks and report builders                                                        |
+| `@sitefs/viewer`   | Local React UI for runs and diffs                                                    |
 
-Dependency rules keep layers clean: `@sitefs/sitefs` and `@sitefs/axfs` never import browser or CLI code. Orchestration flows down: `cli` → `session` → `live` / `browser` / `sitefs` / `qa` / `axfs`.
+The storage and accessibility-tree packages don't import the browser or CLI packages. The CLI creates a session, and the session connects the live shell, browser, storage, and QA code.
 
-## Browser Worker Protocol
+## Keeping the browser in a worker
 
-Playwright runs in a **child process** so the main CLI/MCP process stays light:
+Playwright runs in a child process. The parent exchanges newline-delimited JSON with `browser-worker.js`:
 
-- Parent spawns `browser-worker.js`, speaks **newline-delimited JSON**
-- Request: `{ "id": number, "method": string, "args": unknown[] }`
-- Response: `{ "id": number, "ok": boolean, "result"?: unknown, "error"?: string }`
+- Requests contain an ID, method name, and arguments.
+- Responses carry the same ID, an `ok` flag, and a result or error.
 
-Methods mirror the live backend: `open`, `clickAx`, `getAccessibilityTree`, `snapshot`, and others. Multi-tab support is first-class — `tabs` and `cd tabs/<name>` switch context without losing state.
+Methods include `open`, `clickAx`, `getAccessibilityTree`, and `snapshot`. The `tabs` command and `cd tabs/<name>` switch the active tab.
 
-## MCP Surface
+## Using MCP
 
-SiteFS exposes the same command surface as MCP tools for Codex, Cursor, or any MCP client:
+The MCP server exposes the command catalog to an agent:
 
 ```bash
 sitefs mcp --session .sitefs --allow-write
 ```
 
-Tools include:
+| Task               | Tools                                                           |
+| ------------------ | --------------------------------------------------------------- |
+| Navigate           | `sitefs_ls`, `sitefs_cd`, `sitefs_click`, `sitefs_goto`         |
+| Search and extract | `sitefs_find`, `sitefs_grep`, `sitefs_extract_table`            |
+| Run checks         | `sitefs_check_all`, `sitefs_crawl`, `sitefs_web`                |
+| Inspect evidence   | `sitefs_read_site`, `sitefs_screenshot`, `sitefs:///` resources |
 
-- **Navigation:** `sitefs_ls`, `sitefs_cd`, `sitefs_click`, `sitefs_goto`
-- **Search:** `sitefs_find`, `sitefs_grep`, `sitefs_extract_table`
-- **QA:** `sitefs_check_all`, `sitefs_crawl`, `sitefs_web`
-- **Evidence:** `sitefs_read_site`, `sitefs_screenshot`, `sitefs:///` resources
+`sitefs_screenshot` saves a PNG in the session and returns an inline image for clients that can read it.
 
-`sitefs_screenshot` saves a PNG under the session and returns it inline in MCP responses — useful for vision-driven agents.
-
-## One-Shot QA
-
-For CI or quick checks without an interactive shell:
+## Running a check without the shell
 
 ```bash
 sitefs test https://example.com --session .sitefs-run
@@ -125,26 +114,20 @@ sitefs doctor
 sitefs demo --session .sitefs-demo
 ```
 
-`test` runs checks and writes reports under the session. `view` opens the local viewer against `viewer-manifest.json`.
+`test` writes reports to the session. `view` opens the local viewer using `viewer-manifest.json`. Session configuration controls link scope, crawl limits, snapshots after writes, warning behavior, and sensitive-data handling.
 
-Session config (`config.json`) controls behavior: link scope, crawl limits, auto-snapshot on write, fail-on-warnings, and sensitive-data handling.
+## How it relates to UI-tester
 
-## Relationship to UI-tester
+|              | **UI-tester**                     | **SiteFS**                                |
+| ------------ | --------------------------------- | ----------------------------------------- |
+| Interface    | Ink TUI with LLM planner/judge    | CLI shell + MCP tools                     |
+| Intelligence | LLM generates adaptive test plans | Agent brings its own reasoning            |
+| Evidence     | `.ui-qa-runs/<id>/`               | `/site` session layout                    |
+| Best for     | "Test this URL and score it"      | "Give agents a navigable browser runtime" |
 
-These projects solve different layers of the same problem:
+[UI-tester](/blog/ui-tester) plans and judges a QA run. SiteFS supplies commands and evidence that an agent can use with its own plan. [Packet28](/blog/packet28) covers a separate part of the investigation: reducing repository artifacts after a browser check finds a problem.
 
-| | **UI-tester** | **SiteFS** |
-| --- | --- | --- |
-| Interface | Ink TUI with LLM planner/judge | CLI shell + MCP tools |
-| Intelligence | LLM generates adaptive test plans | Agent brings its own reasoning |
-| Evidence | `.ui-qa-runs/<id>/` | `/site` session layout |
-| Best for | "Test this URL and score it" | "Give agents a navigable browser runtime" |
-
-[UI-tester](/blog/ui-tester) is the opinionated QA product — point it at a URL, watch it plan and execute tests, get a scored report. SiteFS is the infrastructure underneath: structured browser state, persistent evidence, and MCP primitives that any agent can compose.
-
-For repo-side context when fixing what QA finds, [Packet28](/blog/packet28) handles the other half — reducing diffs, logs, and coverage into bounded packets so agents don't burn context exploring the codebase.
-
-## Try It
+## Running from source
 
 ```bash
 git clone https://github.com/usharma123/SiteFS.git
@@ -156,10 +139,4 @@ node packages/cli/dist/index.js doctor
 node packages/cli/dist/index.js test https://utsav.sh --session .sitefs-demo
 ```
 
-The repo bootstraps without global npm/pnpm — `node scripts/pnpm.mjs` handles everything.
-
----
-
-**SiteFS** treats the browser like a filesystem agents can explore, with CI-grade evidence on disk. If you're building agent-driven QA, the missing piece might not be another LLM wrapper — it might be structured state the agent can actually navigate.
-
-**Source code:** [github.com/usharma123/SiteFS](https://github.com/usharma123/SiteFS)
+`node scripts/pnpm.mjs` provides the repository's package-manager bootstrap. After a run, the session files are the place to check what the browser did and what the report is based on.

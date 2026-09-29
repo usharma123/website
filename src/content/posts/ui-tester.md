@@ -1,174 +1,85 @@
 ---
-title: "Building UI-tester: An AI-Powered Terminal UI for Website QA"
-description: "Creating an intelligent terminal-based QA tool that combines browser automation, LLM analysis, and beautiful TUI design to test websites automatically."
-pubDate: "2026-01-27"
-tags: ["testing", "playwright", "llm", "terminal-ui", "qa", "automation"]
+title: 'Building UI-tester for browser QA from the terminal'
+description: 'An LLM planner and judge, a Playwright executor, and an Ink interface that saves the evidence behind each QA report.'
+pubDate: '2026-01-27'
+tags: ['testing', 'playwright', 'llm', 'terminal-ui', 'qa', 'automation']
 ---
 
-I've always been frustrated with manual website testing. Clicking through pages, filling out forms, checking responsiveness—it's tedious and error-prone. But existing automated testing tools felt either too rigid (scripted tests that break on any UI change) or too complex (requiring extensive setup and maintenance). I wanted something smarter: a tool that could understand a website like a human tester would, adapt to changes, and provide meaningful feedback.
+I wanted a website QA tool that could propose checks from the page in front of it. Maintaining a script for every exploratory path takes time, and I wanted to see how much of that planning an LLM could handle.
 
-That's how **UI-tester** was born—an AI-powered terminal UI that tests websites using real browser automation and LLM analysis. It drives a real browser, generates intelligent test plans based on page content, and produces comprehensive quality reports with actionable insights.
+UI-tester pairs an LLM planner and judge with a Playwright executor. An Ink terminal interface shows the run as it progresses, and local files preserve its evidence.
 
-## The Vision: Intelligent Testing, Beautiful Interface
+## Planning, execution, and review
 
-The core idea was simple: combine three powerful technologies:
+| Stage    | Input                         | Output                                 |
+| -------- | ----------------------------- | -------------------------------------- |
+| Planner  | Page structure and test goals | A structured test plan                 |
+| Executor | Planned steps                 | Browser actions, screenshots, and logs |
+| Judge    | Recorded evidence             | A scored report with findings          |
 
-1. **Real Browser Automation** (Playwright) - Actually interact with websites like a user would
-2. **LLM Intelligence** (OpenRouter) - Understand page content and generate adaptive test plans
-3. **Beautiful Terminal UI** (Ink) - Make the whole process enjoyable to watch and use
+`qa/planner.ts` sends page structure and test goals to the model after redaction and truncation. The model returns structured steps: which interactions to exercise and which outcomes to examine. A changed page can produce a different plan, though that plan still needs to be checked against the site's intended behavior.
 
-Instead of writing brittle test scripts, you just point it at a URL and watch it discover pages, plan tests, execute them, and generate reports—all in a beautiful terminal interface.
+`qa/executor.ts` runs steps in Chromium. It clicks controls, fills forms with test data, navigates, and captures screenshots and logs. Timeouts and missing elements become evidence for the report rather than disappearing from the run.
 
-## Architecture: The Three-Stage Pipeline
+`qa/judge.ts` reviews that evidence and produces findings grouped by severity. It can flag possible accessibility, usability, content, and performance issues, with reproduction steps and suggested fixes. A model's score is a review aid; it doesn't establish accessibility compliance or replace measured performance data.
 
-The system follows a clean three-stage pipeline:
+## Finding pages
 
-| Stage | Input | Output |
-| --- | --- | --- |
-| Planner | Page structure and test goals | A structured test plan |
-| Executor | Planned steps | Browser actions, screenshots, and logs |
-| Judge | Recorded evidence | A scored report with findings |
+`utils/sitemap.ts` looks for sitemaps, reads sitemap references from `robots.txt`, and crawls internal links. Crawl depth can be limited. A run covers the pages it discovers and reaches, so its report shouldn't be read as proof that every page was tested.
 
-### 1. Planner: Understanding Before Testing
+## Running checks concurrently
 
-The planner (`qa/planner.ts`) is where the magic starts. It analyzes the DOM structure of a page and uses an LLM to generate an intelligent test plan. Instead of blindly clicking around, it understands:
+`qa/parallelTester.ts` schedules pages across a pool of browsers. The pool caps concurrency and reuses instances. This can shorten a multi-page run, but the result depends on browser resources, page behavior, and model latency.
 
-- What the page is trying to accomplish
-- What key interactions should be tested
-- What potential issues to look for
+## Watching a run
 
-The LLM receives the page HTML (with sensitive data redacted), the site's goals, and generates a structured test plan with specific steps. This makes the tests adaptive—if you redesign your homepage, the planner will understand the new structure and create appropriate tests.
+The Ink interface in `ink/App.tsx` displays progress, logs, retry controls, and a result summary. It reports these phases:
 
-```typescript
-// Simplified planner flow
-async function generateTestPlan(pageContent: string, goals: string) {
-  const prompt = `
-    Analyze this page and create a test plan focusing on: ${goals}
-    Page content: ${redactSensitiveData(pageContent)}
-  `;
-  
-  const plan = await llm.generate(prompt);
-  return parseTestPlan(plan);
-}
-```
+| Phase      | Work                                           |
+| ---------- | ---------------------------------------------- |
+| Init       | Start the browser and capture the initial page |
+| Discovery  | Find candidate pages                           |
+| Planning   | Generate test steps                            |
+| Traversal  | Visit discovered pages                         |
+| Execution  | Run planned actions                            |
+| Evaluation | Build the final report                         |
 
-### 2. Executor: Real Browser Interaction
+`qa/run-streaming.ts` emits updates as work progresses, so the terminal can show which phase is waiting or failing.
 
-The executor (`qa/executor.ts`) takes the test plan and runs it step-by-step using Playwright. This isn't just checking if elements exist—it's actually:
+## Keeping the evidence
 
-- Clicking buttons and links
-- Filling out forms (with safe test data)
-- Navigating between pages
-- Capturing screenshots at key moments
-- Recording evidence of what happened
+Each run writes to `.ui-qa-runs/<run-id>/`:
 
-Each step is executed in a real Chromium browser, so you're testing what users actually experience. The executor also handles edge cases gracefully—timeouts, missing elements, navigation issues—and captures evidence for later analysis.
+| File            | Contents                           |
+| --------------- | ---------------------------------- |
+| `run.json`      | Run metadata                       |
+| `report.json`   | Structured findings and scores     |
+| `evidence.json` | Execution evidence                 |
+| `report.md`     | Readable report                    |
+| `llm-fix.txt`   | Instructions for a follow-up agent |
+| `screenshots/`  | Captured page images               |
 
-### 3. Judge: Comprehensive Evaluation
+The saved files let me revisit a finding after the terminal process exits and compare its claim with the recorded browser state.
 
-After execution, the judge (`qa/judge.ts`) analyzes all the evidence—screenshots, DOM snapshots, execution logs—and generates a scored report. The LLM evaluates:
+## Limiting unintended actions
 
-- **Accessibility issues** - Missing alt text, poor contrast, keyboard navigation problems
-- **Usability problems** - Confusing flows, broken interactions, unclear CTAs
-- **Performance concerns** - Slow loading, layout shifts, rendering issues
-- **Content quality** - Broken links, missing content, unclear messaging
+The executor uses dummy form values, skips detected payment submissions, applies operation timeouts, and limits navigation to internal links. Redaction removes sensitive text before model processing, and discovery respects the configured crawl rules.
 
-Each issue is categorized by severity (critical, high, medium, low) and includes reproduction steps, suggested fixes, and screenshot evidence.
+Those checks reduce risk; they don't guarantee that an unfamiliar site's actions are harmless. I use the tool on sites I'm authorized to test and inspect the recorded actions when reviewing a run.
 
-## Discovery: Finding All the Pages
+## Implementation problems
 
-One of the trickiest parts was page discovery. The tool needs to find all pages on a site to test comprehensively. I implemented a multi-strategy approach:
+Large pages can exceed a model's input budget. Truncation needs to preserve enough page structure for a useful plan. Concurrent browsers need lifecycle management so a failed page doesn't leave processes behind. Network failures and missing controls need explicit reporting so the rest of a run can continue without hiding what failed.
 
-1. **Sitemap.xml** - If available, parse it for all URLs
-2. **Robots.txt** - Extract sitemap references
-3. **Link Crawling** - Follow internal links from the homepage
+The next work I want to do is compare reports across runs, add CI integration and more precise test goals, support additional browser engines, and collect measured performance data through Lighthouse.
 
-The discovery phase (`utils/sitemap.ts`) respects robots.txt rules and can be configured with depth limits to avoid crawling entire massive sites.
-
-## Parallel Testing: Speed Meets Quality
-
-Testing pages sequentially would be too slow. I built a parallel testing system (`qa/parallelTester.ts`) that:
-
-- Maintains a pool of browser instances
-- Tests multiple pages concurrently
-- Manages resource limits (max parallel browsers)
-- Aggregates results from all pages
-
-This means testing 10 pages takes roughly the same time as testing 1 page (within browser resource limits).
-
-## Terminal UI: Making It Beautiful
-
-The terminal interface (`ink/App.tsx`) was crucial for making the tool enjoyable to use. Built with Ink (React for CLIs), it provides:
-
-- **Real-time progress** - Watch phases progress live
-- **Colorful logs** - Different colors for different log levels
-- **Interactive controls** - Scroll through logs, retry on errors
-- **Results summary** - Quick overview of score and issues
-
-The UI shows six distinct phases:
-1. **Init** - Browser startup and initial screenshot
-2. **Discovery** - Finding pages to test
-3. **Planning** - LLM generating test plans
-4. **Traversal** - Testing discovered pages
-5. **Execution** - Running planned tests
-6. **Evaluation** - Generating final report
-
-Each phase updates in real-time, so you always know what's happening.
-
-## Storage: Local-First Results
-
-All results are saved locally in `.ui-qa-runs/<run-id>/`:
-
-- **run.json** - Metadata about the run
-- **report.json** - Full structured report with scores
-- **evidence.json** - Detailed execution evidence
-- **report.md** - Human-readable markdown report
-- **llm-fix.txt** - Instructions for AI to fix issues
-- **screenshots/** - All captured screenshots
-
-This local-first approach means you own your data and can review results even after the run completes.
-
-## Safety First: Ethical Testing
-
-I built several safety features to ensure the tool never causes harm:
-
-- **Dummy data only** - Forms are filled with `test@example.com`, "Test User", etc.
-- **No payment submission** - Detects payment forms and skips submission
-- **Sensitive data redaction** - Removes emails, phone numbers, etc. before LLM processing
-- **Timeouts everywhere** - All browser operations have timeouts
-- **Controlled navigation** - Only follows internal links, respects robots.txt
-
-## Technical Challenges
-
-Building this wasn't without challenges:
-
-**LLM Token Limits**: Page HTML can be massive. I had to implement smart truncation—keeping the structure and key content while removing noise.
-
-**Browser Resource Management**: Running multiple browsers in parallel requires careful resource management. I implemented a browser pool (`utils/browserPool.ts`) that reuses instances and manages lifecycle.
-
-**Streaming Updates**: The terminal UI needs to update in real-time as tests run. I built a streaming architecture (`qa/run-streaming.ts`) that emits events as phases progress.
-
-**Error Recovery**: Tests can fail for many reasons—network issues, timeouts, missing elements. The executor needs to gracefully handle failures and continue testing other pages.
-
-## What's Next
-
-The tool is already useful, but there's more I want to add:
-
-- **CI/CD Integration** - Run as part of deployment pipelines
-- **Regression Detection** - Compare reports across runs to catch regressions
-- **Custom Test Goals** - More granular control over what to test
-- **Multi-browser Testing** - Test across Chrome, Firefox, Safari
-- **Performance Metrics** - Lighthouse integration for performance scores
-
-## Try It Out
-
-If you want to test your website (or any website), you can install and run:
+## Running it
 
 ```bash
 npx @utsav/ui-qa https://example.com
 ```
 
-Or clone the repo and run locally:
+Or run from source:
 
 ```bash
 git clone https://github.com/usharma123/UI-tester-
@@ -177,10 +88,6 @@ bun install
 bun start https://example.com
 ```
 
-The tool will discover pages, generate test plans, execute them, and produce a comprehensive report—all while showing beautiful progress in your terminal.
+After the run, start with `report.md`, then inspect the evidence behind any finding you intend to act on.
 
----
-
-**UI-tester** demonstrates that testing doesn't have to be boring or brittle. By combining browser automation with LLM intelligence, we can create tools that understand websites like humans do, adapt to changes, and provide meaningful feedback. It's been a fun project to build, and I'm excited to see how it evolves.
-
-**Source code:** [github.com/usharma123/UI-tester-](https://github.com/usharma123/UI-tester-)
+[Source code](https://github.com/usharma123/UI-tester-)

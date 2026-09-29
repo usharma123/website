@@ -1,57 +1,30 @@
 ---
-title: "GSuiteTUI: Managing Google Workspace from Your Terminal"
-description: "Building a terminal user interface in Rust for Google Calendar, Gmail, and Drive—because sometimes the browser is just too much."
-pubDate: "2026-02-02"
-tags: ["rust", "terminal-ui", "google-api", "productivity", "cli"]
+title: 'GSuiteTUI: Google Workspace in the terminal'
+description: 'A Rust terminal interface for Calendar, Gmail, and Drive, with shared authentication and asynchronous API requests.'
+pubDate: '2026-02-02'
+tags: ['rust', 'terminal-ui', 'google-api', 'productivity', 'cli']
 ---
 
-I spend a lot of time in the terminal. Between coding, git operations, and server management, context-switching to a browser tab for calendar events or emails always felt jarring. The browser is great for rich interactions, but for quick lookups—"when's my next meeting?" or "did that email come through?"—it's overkill. I wanted something faster, something that stayed in my workflow.
+I wanted to check my next meeting or triage an email from the terminal. Those are small tasks, but I kept opening a browser and losing my place among its tabs.
 
-That's how **GSuiteTUI** was born—a terminal user interface built in Rust that brings Google Calendar, Gmail, and Drive directly into the terminal. No browser tabs, no Electron apps, just your terminal and the Google APIs.
+GSuiteTUI is a Rust terminal interface for Google Calendar, Gmail, and Drive. It uses the Google APIs while keeping service selection, lists, and common actions in one keyboard-driven interface.
 
-## Why a Terminal UI?
+## The event loop
 
-Modern productivity tools are feature-rich but often bloated. Google Calendar in a browser means:
-
-- Opening a new tab
-- Waiting for JavaScript to load
-- Getting distracted by other tabs
-- Losing your mental context
-
-A terminal UI inverts this. It's instant, focused, and stays where you're already working. For developers who live in the terminal, this means:
-
-1. **Zero context switching** - Check your calendar without leaving vim/neovim
-2. **Keyboard-first navigation** - No mouse needed
-3. **Resource efficiency** - TUIs use a fraction of browser memory
-4. **SSH-friendly** - Works over remote connections
-
-## Architecture: Rust + ratatui
-
-I chose Rust for this project for a few reasons: performance, memory safety, and the excellent ecosystem around terminal UIs. The stack consists of:
-
-- **ratatui** - The Rust TUI framework (successor to tui-rs)
-- **tokio** - Async runtime for handling API calls
-- **reqwest** - HTTP client for Google API requests
-- **crossterm** - Cross-platform terminal manipulation
-
-The architecture follows a standard event-driven TUI pattern:
+I used `ratatui` for rendering, `crossterm` for terminal events, `tokio` for asynchronous work, and `reqwest` for HTTP requests.
 
 1. Read an input event.
 2. Update the application state.
 3. Render the active service from that state.
-4. Return to the event loop for the next input or API response.
+4. Return to the loop for the next input or API response.
 
-Each Google service (Calendar, Gmail, Drive) is implemented as a separate module with its own state management, while sharing common authentication and rendering infrastructure.
+Calendar, Gmail, and Drive each have their own state and share authentication and rendering code.
 
-## Google API Integration
+## Authentication and API data
 
-Working with Google's APIs from a CLI context presented some interesting challenges. The OAuth2 flow, designed for browsers, needed adaptation:
+The browser-based OAuth flow returns to a temporary local HTTP server. Refresh tokens allow later sessions to renew access without asking for consent every time.
 
-1. **Local callback server** - Spin up a temporary HTTP server to catch the OAuth redirect
-2. **Token persistence** - Store refresh tokens securely for future sessions
-3. **Automatic refresh** - Handle token expiration transparently
-
-For Calendar, the API returns events in a rich JSON format that needed mapping to a terminal-friendly representation:
+API responses still need to be shaped for the terminal. This Calendar example formats an event's start time and duration:
 
 ```rust
 struct CalendarEvent {
@@ -76,40 +49,33 @@ impl CalendarEvent {
 }
 ```
 
-Gmail integration focuses on inbox overview and quick triage—marking as read, archiving, starring—rather than full email composition. For anything complex, you can still jump to the browser.
+The Gmail view focuses on inbox triage: marking messages as read, archiving, and starring. Longer interactions can still go through the browser.
 
-## Terminal UI Design
+## Fitting the interface into a terminal
 
-Designing for the terminal has unique constraints. You're working with:
+The layout has a service selector, a content pane, and a footer with the available keys:
 
-- Fixed-width characters
-- Limited colors (though modern terminals support 24-bit)
-- No images (ASCII art aside)
-- Variable terminal sizes
-
-The interface uses a three-pane layout:
-
-| Region | Contents |
-| --- | --- |
-| Header | GSuiteTUI and the signed-in account |
-| Left pane | Calendar, Gmail, and Drive selection |
+| Region    | Contents                                            |
+| --------- | --------------------------------------------------- |
+| Header    | GSuiteTUI and the signed-in account                 |
+| Left pane | Calendar, Gmail, and Drive selection                |
 | Main pane | Events, messages, or files for the selected service |
-| Footer | Available keys, such as `j/k`, `Enter`, and `q` |
+| Footer    | Available keys, such as `j/k`, `Enter`, and `q`     |
 
-For example, the Calendar pane groups events by day:
+The Calendar view groups events by day. For example:
 
-| Day | Time | Duration | Event |
-| --- | --- | --- | --- |
-| Today | 09:00 | 30 min | Team Standup |
-| Today | 11:00 | 60 min | Design Review |
-| Today | 14:00 | 45 min | 1:1 with PM |
-| Tomorrow | 10:00 | 90 min | Sprint Plan |
+| Day      | Time  | Duration | Event         |
+| -------- | ----- | -------- | ------------- |
+| Today    | 09:00 | 30 min   | Team Standup  |
+| Today    | 11:00 | 60 min   | Design Review |
+| Today    | 14:00 | 45 min   | 1:1 with PM   |
+| Tomorrow | 10:00 | 90 min   | Sprint Plan   |
 
-The left pane shows service selection, the main pane shows service content, and the footer displays context-sensitive keybindings. Colors indicate status—upcoming events in green, overdue in red, unread emails in bold.
+Terminal size limits how much context fits on screen. Status colors and bold text help distinguish events and unread messages, while the footer keeps the current controls visible.
 
-## Handling Async Operations
+## Keeping requests out of the input loop
 
-Google API calls can be slow. Without careful handling, the UI would freeze during requests. I used Rust's async/await with a message-passing architecture:
+Google API requests can take longer than a keystroke should. The application uses messages to update state as data arrives. These are the relevant message shapes and state changes:
 
 ```rust
 enum Message {
@@ -136,31 +102,21 @@ async fn handle_message(msg: Message, state: &mut AppState) {
 }
 ```
 
-This keeps the UI responsive—you can still navigate while data loads in the background. A small spinner in the status bar indicates pending operations.
+The sketch omits the task dispatch. The request must run outside the input/render loop for navigation to remain responsive. A loading indicator shows when work is pending.
 
-## Challenges
+## Problems I ran into
 
-**OAuth in the terminal**: The standard OAuth flow opens a browser for consent. In a pure terminal environment (like SSH), this is problematic. I implemented a device flow fallback where you get a code to enter at google.com/device from any browser.
+Authentication is awkward over SSH because the consent page opens in a browser. I explored a device-code fallback for that case, but which flow works depends on the Google client and requested permissions.
 
-**Timezone handling**: Calendar events come in UTC but users think in local time. The chrono crate handles this well, but edge cases around DST transitions required careful testing.
+Time zones were another source of mistakes. Events need to display in local time, including across daylight-saving transitions. I used `chrono` for date and time handling.
 
-**Rate limiting**: Google APIs have quotas. I added request batching and caching to minimize API calls. Calendar events, for instance, are cached and only refreshed on explicit request or after 5 minutes.
+I also added batching and caching to reduce repeated API calls. Calendar data refreshes on request or after five minutes. Terminal differences still need attention, particularly color and mouse support across iTerm2, Alacritty, and Windows Terminal.
 
-**Terminal compatibility**: Different terminals (iTerm2, Alacritty, Windows Terminal) have varying support for features like true color and mouse input. crossterm abstracts most of this, but some edge cases remain.
+## What's unfinished
 
-## What's Next
+I want to add quick event creation, basic Gmail composition through `$EDITOR`, meeting notifications, account switching, and offline viewing. The current focus is checking information and taking small actions without leaving the terminal.
 
-The tool is functional for my daily use, but there's more I want to add:
-
-- **Quick event creation** - Add events directly from the terminal
-- **Gmail compose** - Basic email composition with $EDITOR integration
-- **Notifications** - Desktop notifications for upcoming events
-- **Multiple accounts** - Switch between work and personal Google accounts
-- **Offline mode** - Cache data for viewing without network
-
-## Try It
-
-If you live in the terminal and use Google Workspace, give it a try:
+## Running it
 
 ```bash
 git clone https://github.com/usharma123/GSuiteTUI
@@ -168,10 +124,6 @@ cd GSuiteTUI/tui-suite
 cargo run
 ```
 
-You'll need to set up Google API credentials (instructions in the README), but after that first OAuth dance, it's smooth sailing.
+The README covers Google API credentials and the initial authorization step.
 
----
-
-GSuiteTUI scratches a personal itch—staying in the terminal while still being able to check my calendar and emails. It's not trying to replace the full Google Workspace experience, just provide a faster path for the 80% of interactions that are simple lookups and quick actions. For those of us who measure productivity in keystrokes, that matters.
-
-**Source code:** [github.com/usharma123/GSuiteTUI](https://github.com/usharma123/GSuiteTUI)
+[Source code](https://github.com/usharma123/GSuiteTUI)

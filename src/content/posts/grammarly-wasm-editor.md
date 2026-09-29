@@ -1,95 +1,56 @@
 ---
-title: 'How I Built a Grammarly-Like Editor with React, TipTap, and Rust/WASM'
-description: 'A deep dive into building a client-side writing assistant that keeps the UI responsive by running grammar and rewrite scoring inside a WebWorker-backed Rust/WASM engine.'
+title: 'Building a grammar editor with React, TipTap, and Rust/WASM'
+description: 'Moving text analysis into a worker, mapping UTF-16 offsets, and keeping stale lint results out of a TipTap editor.'
 pubDate: '2026-02-18'
 tags: ['rust', 'wasm', 'react', 'tiptap', 'webworker', 'nlp']
 ---
 
-I wanted to see how close I could get to a Grammarly-style experience without sending every keystroke to a server. The goal was simple: catch grammar and style issues quickly, keep suggestions useful, and never make typing feel laggy.
+I wanted grammar suggestions without sending every keystroke to a server. The harder requirement was keeping typing responsive while the text was being analyzed.
 
-That project became **Grammarly-like Desktop Lint Engine**: a monorepo with a React + TipTap editor, a Rust-to-WASM lint engine, and a worker-based architecture that keeps heavy text analysis off the main thread.
+I built a React and TipTap editor backed by a Rust/WASM lint engine in a Web Worker. The main thread owns editing and rendering. The worker returns issue locations, messages, severity, and suggested replacements.
 
-**Repo:** [github.com/usharma123/Grammarly](https://github.com/usharma123/Grammarly)  
-**Live demo:** [grammarly-editor.vercel.app](https://grammarly-editor.vercel.app)
+[Source code](https://github.com/usharma123/Grammarly) · [Demo](https://grammarly-editor.vercel.app)
 
-## The Core Idea
+## Where the work runs
 
-The core design is:
+| Step             | Location                | Result                                                  |
+| ---------------- | ----------------------- | ------------------------------------------------------- |
+| Edit text        | Main thread             | A new document version                                  |
+| Request analysis | TipTap plugin           | Text and version sent to the worker                     |
+| Lint and rank    | Rust/WASM in the worker | Issues with UTF-16 offsets                              |
+| Apply results    | Main thread             | Underlines and suggestion cards for the current version |
 
-1. Keep editing/rendering on the browser main thread.
-2. Move all expensive linting/scoring into a WebWorker.
-3. Run the actual language engine inside Rust/WASM.
-4. Return only compact lint results (offsets, message, severity, suggestions).
+The pnpm workspace separates the editor, extension, and engine:
 
-That way, the editor stays smooth even when linting frequently.
-
-## Monorepo Layout
-
-The project is structured as a pnpm workspace:
-
-| Directory | Contents |
-| --- | --- |
-| `apps/editor/` | React and TipTap web app |
-| `apps/extension/` | Chrome extension build |
+| Directory               | Contents                           |
+| ----------------------- | ---------------------------------- |
+| `apps/editor/`          | React and TipTap web app           |
+| `apps/extension/`       | Chrome extension build             |
 | `packages/engine-wasm/` | Rust crate compiled to WebAssembly |
 
-This split made development cleaner: UI iteration happened in `apps/editor`, while engine logic stayed isolated in `packages/engine-wasm`.
+## Connecting TipTap to the engine
 
-## Frontend: TipTap + Lint Decorations
+`LintExtension.ts` debounces requests by 200 ms. For larger documents it can lint a paragraph window instead of the entire document. It sends that text to the worker, maps returned spans into ProseMirror positions, and draws underlines by severity.
 
-In the editor app, the central piece is a custom TipTap plugin (`LintExtension.ts`) that:
+`lintWorker.ts` initializes the WASM module lazily. It also responds on error, even if the result is empty, so a request doesn't leave the interface waiting indefinitely.
 
-- debounces lint requests,
-- decides between full-document linting vs paragraph-window linting,
-- sends text to the worker,
-- maps returned UTF-16 spans back into ProseMirror positions,
-- paints inline decorations (wavy underlines) by severity.
+## Linting and ranking
 
-Two practical optimizations made a big difference:
+The engine in `packages/engine-wasm/src/lib.rs` uses Harper to parse text and run spelling, grammar, punctuation, and style rules. It deduplicates overlapping results, converts their offsets, computes features, and ranks candidates before returning suggestions.
 
-1. **200ms debounce** to avoid firing on every single keystroke.
-2. **Paragraph windowing for larger docs** so only the active region is re-linted, reducing latency and cost.
+I also added custom style rules and checks on rewrite candidates. Filtering matters: a suggestion that fires too often is easy to stop trusting, even when some of its matches are useful.
 
-## Worker Boundary: Keeping the Main Thread Free
+## Getting text offsets right
 
-`lintWorker.ts` lazily initializes the WASM module and engine instance, then handles request/response messaging with the UI.
+Rust's text processing and the browser's editor APIs don't use the same units for positions. The engine converts character indices into UTF-16 offsets before returning results. The TipTap plugin then maps those offsets into editor positions.
 
-Important detail: the worker always returns a response (including empty results on error) so the UI never hangs waiting for a promise that never resolves.
+Emoji are an easy way to expose mistakes here. If the conversion is wrong, an underline can land on the next character or a replacement can delete the wrong span. The editor needs correct offsets to replace the intended text.
 
-## Rust/WASM Engine: Real Linting + Suggestion Ranking
+## Rejecting stale results
 
-Inside `packages/engine-wasm/src/lib.rs`, the engine:
+A lint request can finish after the user has changed the document. Each request carries a `docVersion`, and the editor ignores responses for an older version. That keeps old underlines and suggestions from being applied to new text.
 
-1. Parses text with Harper.
-2. Runs curated lint rules (spelling, grammar, punctuation, style).
-3. Deduplicates overlaps.
-4. Converts spans from char indices to UTF-16 offsets.
-5. Featurizes each candidate.
-6. Scores whether to show it (plus rewrite scoring for generated rewrites).
-7. Returns top-ranked suggestions.
-
-The engine also includes custom style rules (Weir-based) and rewrite candidates gated by semantic/quality checks.
-
-## A Subtle but Critical Problem: Text Offsets
-
-One of the easiest ways to break this kind of product is mishandling text offsets.
-
-- Rust-side processing naturally works in character indices.
-- Browser/editor APIs usually work in UTF-16 code units.
-
-If these don't match (especially with emoji or non-Latin scripts), underlines appear in the wrong place and replacements corrupt text. The project fixes this by converting to UTF-16 offsets in Rust before crossing the WASM boundary, then mapping offsets carefully in the TipTap plugin.
-
-## Stale Results and Version Gating
-
-Linting is asynchronous, so results can arrive out of order. The editor uses `docVersion` checks to ignore stale responses. That prevents classic bugs like:
-
-- suggestion cards for text that no longer exists,
-- underlines jumping to old positions,
-- applying a fix to the wrong content.
-
-## Build + Deployment Workflow
-
-The developer loop is:
+## Running the project
 
 ```bash
 pnpm install
@@ -97,23 +58,12 @@ pnpm run build:wasm
 pnpm run dev
 ```
 
-The WASM package is built with `wasm-pack`, and the editor app is bundled with Vite. The repository also keeps extension output isolated from the website deploy path, so web and extension builds don't interfere with each other.
+`wasm-pack` builds the engine and Vite bundles the editor. Extension output stays separate from the website build.
 
-## What I Learned
-
-- **Threading model matters as much as model quality.** A slightly weaker model with responsive UX feels far better than a stronger model that blocks typing.
-- **Offset hygiene is non-negotiable.** UTF-16 conversion and mapping logic are foundational for correctness.
-- **Local scoring gates reduce noise.** Even simple per-rule thresholds and ranking filters dramatically improve trust in suggestions.
-- **Monorepo boundaries help velocity.** Keeping editor, extension, and engine separated made iteration faster.
-
-## Closing
-
-This was a great systems project because it sits at the intersection of UI engineering, compiler/runtime constraints (WASM), and language tooling. If you're building writing tools, I'd strongly recommend starting with architecture and latency budgets first, then layering smarter scoring models after the feedback loop feels instant.
-
-If you want to explore the code, start with these files:
+Most of the integration is in these files:
 
 - `apps/editor/src/tiptap/LintExtension.ts`
 - `apps/editor/src/engine/lintWorker.ts`
 - `packages/engine-wasm/src/lib.rs`
 
-And here is the full repository again: [github.com/usharma123/Grammarly](https://github.com/usharma123/Grammarly)
+The work I would prioritize in another editor is the same: move analysis off the typing path, make positions unambiguous, and discard obsolete responses before they reach the document.

@@ -39,6 +39,14 @@ body {
   outline-offset: 2px;
 }
 
+/* Text fields show the caret instead of a box around the typing area. */
+input:not([type]):focus-visible,
+input[type='text']:focus-visible,
+input[type='search']:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
+
 /* ---- Desktop ------------------------------------------------------------ */
 
 .wallpaper {

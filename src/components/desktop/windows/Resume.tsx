@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 import EXPERIENCE from '@/data/experience'
-import RESEARCH from '@/data/research'
+import RESEARCH, { type ResearchAcceptance } from '@/data/research'
 import { EDUCATION } from '@/data/resume'
 import { shortMonth } from '@/lib/format'
 import SkillGrid from '../SkillGrid'
@@ -57,10 +57,14 @@ export default function Resume() {
               key: r.title,
               title: r.title,
               org: r.org,
-              when: `${shortMonth(r.startDate)} – ${shortMonth(r.endDate)}`,
+              when:
+                r.startDate === r.endDate
+                  ? shortMonth(r.endDate)
+                  : `${shortMonth(r.startDate)} – ${shortMonth(r.endDate)}`,
               body: r.description,
               tags: r.stack,
               note: r.highlight,
+              acceptances: r.acceptances,
             }))}
           />
         ) : null}
@@ -90,6 +94,7 @@ type Entry = {
   body?: string
   tags?: string[]
   note?: string
+  acceptances?: ResearchAcceptance[]
 }
 
 function Entries({ items }: { items: Entry[] }) {
@@ -115,6 +120,24 @@ function Entries({ items }: { items: Entry[] }) {
             <p className="bg-marker mt-1.5 inline-block px-1 text-[13px] font-medium">
               {e.note}
             </p>
+          ) : null}
+          {e.acceptances?.length ? (
+            <ul className="mt-1.5 space-y-1 text-[13px]">
+              {e.acceptances.map((acceptance) => (
+                <li key={acceptance.venue}>
+                  <span className="bg-marker px-1 font-medium">
+                    {acceptance.status}
+                  </span>{' '}
+                  ·{' '}
+                  <a
+                    href={acceptance.url}
+                    className="underline underline-offset-2"
+                  >
+                    {acceptance.venue}
+                  </a>
+                </li>
+              ))}
+            </ul>
           ) : null}
           {e.tags?.length ? (
             <p className="text-muted mt-1.5 font-mono text-[11.5px]">

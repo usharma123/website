@@ -27,7 +27,7 @@ const RESEARCH: ResearchProject[] = [
     stack: ['world models', 'physical AI', 'temporal straightening'],
     acceptances: [
       {
-        venue: 'World Models and Physical AI (WM PAI)',
+        venue: 'World Models in Physical AI (WM PAI)',
         url: 'https://www.worldmodels-physicalai.com/cfp.html',
         status: 'Accepted as a poster',
       },

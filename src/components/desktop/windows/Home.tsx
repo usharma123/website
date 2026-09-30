@@ -36,11 +36,11 @@ export default function Home() {
             </span>
           </h1>
           <p className="mt-5 max-w-[560px] text-[17px] leading-[1.65] @3xl:text-[18.5px]">
-            Make yourself at home. I’m a software engineer at CLS, and the rest
-            of the time I build{' '}
-            <Mark>developer tools, agent infrastructure and terminal apps</Mark>
-            , then write about how they work. Everything here is real — open
-            whatever looks interesting.
+            Hi, I’m Utsav. Pull up a chair. During the day I’m a software
+            engineer at CLS, working on <Mark>CLS Settlement and AI</Mark>. At
+            night and on weekends I build developer tools and terminal apps for
+            fun, and sometimes write about what I figured out along the way.
+            Click around. Everything here actually works.
           </p>
           <p className="text-muted mt-4 text-[15px]">
             {EXPERIENCE[0].role} at CLS · MS CS, Penn ’

@@ -12,11 +12,20 @@ const EXPERIENCE: Role[] = [
   {
     company: 'CLS Group',
     role: 'Senior Associate – Software Engineer',
-    description: 'Application development on the CLSnet platform.',
-    startDate: 'November 2025',
+    description: 'Engineering on CLS Settlement and AI.',
+    startDate: 'August 2026',
     endDate: 'Present',
     location: 'New Jersey',
-    tags: ['fintech', 'platform'],
+    tags: ['fintech', 'settlement', 'ai'],
+  },
+  {
+    company: 'Xoriant',
+    role: 'Software Engineer',
+    description: 'Consulted for CLS Group on the CLSnet platform.',
+    startDate: 'November 2025',
+    endDate: 'August 2026',
+    location: 'New Jersey',
+    tags: ['fintech', 'consulting'],
   },
   {
     company: 'Vetra',

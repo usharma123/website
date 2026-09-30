@@ -841,7 +841,7 @@ function ask(raw: string, ctx: Ctx): Step | null {
   )
     return say(
       <>
-        Right now: {EXPERIENCE[0].role} at CLS, on the CLSnet platform. On the
+        Right now: {EXPERIENCE[0].role} at CLS, on CLS Settlement and AI. On the
         side:{' '}
         {PROJECTS.filter((p) => p.featured).map((p, i, all) => (
           <span key={p.slug}>

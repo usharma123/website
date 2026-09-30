@@ -65,15 +65,16 @@ export default function Readme() {
         </p>
         <p>
           Right now I’m a Senior Associate – Software Engineer at CLS, working
-          on the CLSnet platform, and finishing a master’s in computer science
+          on CLS Settlement and AI, and finishing a master’s in computer science
           at Penn. On the side I build developer tools — usually ones that live
           in a terminal or help AI agents test and reason about code.
         </p>
         <p>
-          Before that I co-founded Vetra, where we built retrieval and scraping
-          agents for patent search, and ran research teams at Dream Team
-          Engineering — including a diffusion model that turns CT scans into
-          synthetic MRIs, which I presented at Yale.
+          Before that I was at Xoriant, consulting for CLS on the CLSnet
+          platform. Earlier, I co-founded Vetra, where we built retrieval and
+          scraping agents for patent search, and ran research teams at Dream
+          Team Engineering — including a diffusion model that turns CT scans
+          into synthetic MRIs, which I presented at Yale.
         </p>
       </div>
 

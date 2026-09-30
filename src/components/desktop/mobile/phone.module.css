@@ -155,7 +155,10 @@
     box-shadow: 0 3px 6px #141b260c;
   }
   .appIcon[data-app-id='writing'],
-  .appIcon[data-app-id='blackjack'] {
+  .appIcon[data-app-id='games'],
+  .appIcon[data-app-id='blackjack'],
+  .appIcon[data-app-id='higherLower'],
+  .appIcon[data-app-id='memory'] {
     background: #e7deff;
   }
   .appIcon[data-app-id='projects'] {

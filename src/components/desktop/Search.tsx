@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import PROJECTS from '@/data/projects'
 import { PROFILE } from '@/data/resume'
 import { formatDate } from '@/lib/format'
-import { APPS, DESKTOP_APPS } from './apps'
+import { APPS, DESKTOP_APPS, GAMES } from './apps'
 import { useDesktop } from './context'
 import { Icon, type IconName } from './icons'
 
@@ -58,7 +58,7 @@ export default function Search({ onClose }: { onClose: () => void }) {
 
   const all = useMemo<Result[]>(
     () => [
-      ...[...DESKTOP_APPS, 'trash' as const].map((id) => ({
+      ...[...DESKTOP_APPS, ...GAMES, 'trash' as const].map((id) => ({
         key: `app:${id}`,
         group: 'Apps' as const,
         title: APPS[id].label ?? APPS[id].title,

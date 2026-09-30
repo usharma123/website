@@ -15,6 +15,9 @@ export type IconName =
   | 'box'
   | 'home'
   | 'cards'
+  | 'arcade'
+  | 'hilo'
+  | 'pairs'
 
 const S = 'stroke-ink'
 
@@ -36,11 +39,101 @@ export function Icon({ name, size = 44 }: { name: IconName; size?: number }) {
 }
 
 const ICONS: Record<IconName, ReactNode> = {
+  arcade: (
+    <>
+      <path d="M4 11h14l4 5h22v26H4z" className={`fill-accent ${S}`} />
+      <rect
+        x="21"
+        y="7"
+        width="15"
+        height="21"
+        rx="2"
+        transform="rotate(14 28 17)"
+        className={`fill-paper ${S}`}
+      />
+      <path d="M4 21h40v21H4z" className={`fill-marker ${S}`} />
+      <path
+        d="M24 26c-1.5 2.2-5 3.6-5 5.8a2.9 2.9 0 0 0 5 1.6 2.9 2.9 0 0 0 5-1.6c0-2.2-3.5-3.6-5-5.8z"
+        className="fill-ink"
+      />
+      <path d="M24 33v4m-2.5 0h5" className={S} />
+    </>
+  ),
+  hilo: (
+    <>
+      <rect
+        x="11"
+        y="5"
+        width="26"
+        height="38"
+        rx="3"
+        className={`fill-paper ${S}`}
+      />
+      <path d="M24 21V10m-5 5l5-5 5 5" className={S} />
+      <path d="M24 27v11m-5-5l5 5 5-5" className="stroke-accent" />
+    </>
+  ),
+  pairs: (
+    <>
+      <rect
+        x="7"
+        y="5"
+        width="15"
+        height="18"
+        rx="2"
+        className={`fill-marker ${S}`}
+      />
+      <rect
+        x="26"
+        y="5"
+        width="15"
+        height="18"
+        rx="2"
+        className={`fill-paper ${S}`}
+      />
+      <rect
+        x="7"
+        y="25"
+        width="15"
+        height="18"
+        rx="2"
+        className={`fill-paper ${S}`}
+      />
+      <rect
+        x="26"
+        y="25"
+        width="15"
+        height="18"
+        rx="2"
+        className={`fill-marker ${S}`}
+      />
+      <circle cx="33.5" cy="14" r="3" className="fill-accent" />
+      <circle cx="14.5" cy="34" r="3" className="fill-accent" />
+    </>
+  ),
   cards: (
     <>
-      <rect x="6" y="6" width="26" height="34" rx="3" transform="rotate(-10 19 23)" className={`fill-marker ${S}`} />
-      <rect x="17" y="9" width="26" height="34" rx="3" className={`fill-paper ${S}`} />
-      <path d="M30 17c-2 3-7 5-7 8a4 4 0 0 0 7 2 4 4 0 0 0 7-2c0-3-5-5-7-8z" className="fill-ink" />
+      <rect
+        x="6"
+        y="6"
+        width="26"
+        height="34"
+        rx="3"
+        transform="rotate(-10 19 23)"
+        className={`fill-marker ${S}`}
+      />
+      <rect
+        x="17"
+        y="9"
+        width="26"
+        height="34"
+        rx="3"
+        className={`fill-paper ${S}`}
+      />
+      <path
+        d="M30 17c-2 3-7 5-7 8a4 4 0 0 0 7 2 4 4 0 0 0 7-2c0-3-5-5-7-8z"
+        className="fill-ink"
+      />
       <path d="M30 26v8m-4 0h8" className={S} />
     </>
   ),

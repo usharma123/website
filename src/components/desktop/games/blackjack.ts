@@ -1,7 +1,9 @@
-export type Card = {
-  suit: '♠' | '♥' | '♦' | '♣'
-  rank: string
-}
+import type { Card } from './cards.ts'
+
+export { shuffledDeck, type Card } from './cards.ts'
+
+/** The dealer stops drawing once the hand holds this many cards. */
+export const DEALER_MAX_CARDS = 5
 
 export type Game = {
   phase: 'ready' | 'player' | 'dealer' | 'settled'
@@ -50,32 +52,6 @@ export function handValue(cards: Card[]) {
     aces--
   }
   return { total, soft: aces > 0 }
-}
-
-// Shuffle outside the reducer so replaying an action never changes its result.
-export function shuffledDeck(random: () => number = Math.random): Card[] {
-  const suits: Card['suit'][] = ['♠', '♥', '♦', '♣']
-  const ranks = [
-    'A',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10',
-    'J',
-    'Q',
-    'K',
-  ]
-  const deck = suits.flatMap((suit) => ranks.map((rank) => ({ suit, rank })))
-  for (let i = deck.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1))
-    ;[deck[i], deck[j]] = [deck[j], deck[i]]
-  }
-  return deck
 }
 
 function settle(
@@ -142,7 +118,7 @@ export function gameReducer(state: Game, action: Action): Game {
     case 'dealer': {
       if (state.phase !== 'dealer') return state
       const dealerTotal = handValue(state.dealer).total
-      if (dealerTotal < 17) {
+      if (dealerTotal < 17 && state.dealer.length < DEALER_MAX_CARDS) {
         const [card, ...deck] = state.deck
         if (!card) return state
         return { ...state, deck, dealer: [...state.dealer, card] }

@@ -259,6 +259,55 @@
 .reset:hover:enabled {
   color: var(--color-ink);
 }
+.preview {
+  --card-width: 58px;
+  --card-height: 82px;
+  height: 128px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-chrome);
+}
+.preview .card {
+  margin-inline: -6px;
+  animation: none;
+}
+.preview .card:nth-child(odd) {
+  transform: rotate(-5deg);
+}
+.preview .card:nth-child(even) {
+  transform: rotate(4deg) translateY(-3px);
+}
+.preview .corner {
+  font-size: 12px;
+}
+.preview .pip {
+  font-size: 24px;
+}
+.preview .cardBack > span {
+  font-size: 26px;
+}
+.faded {
+  opacity: 0.55;
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(6, var(--card-width));
+  gap: 7px;
+  justify-content: center;
+}
+.tile {
+  display: block;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 120ms ease;
+}
+.tile:hover:not([aria-disabled='true']) {
+  transform: translateY(-2px);
+}
+.tile[aria-disabled='true'] {
+  cursor: default;
+}
 @keyframes arrive {
   from {
     opacity: 0;
@@ -288,13 +337,17 @@
     width: 100%;
     margin: 4px 0 0;
   }
+  .board {
+    grid-template-columns: repeat(4, var(--card-width));
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .card {
     animation: none;
   }
   .primary,
-  .secondary {
+  .secondary,
+  .tile {
     transition: none;
   }
 }

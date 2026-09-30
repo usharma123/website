@@ -53,7 +53,10 @@ const Resume = dynamic(() => import('./windows/Resume'))
 const Terminal = dynamic(() => import('./windows/Terminal'))
 const Contact = dynamic(() => import('./windows/Contact'))
 const Trash = dynamic(() => import('./windows/Trash'))
+const Games = dynamic(() => import('./windows/Games'))
 const Blackjack = dynamic(() => import('./windows/Blackjack'))
+const HigherLower = dynamic(() => import('./windows/HigherLower'))
+const Memory = dynamic(() => import('./windows/Memory'))
 
 const TASKBAR = 44
 const WALLPAPER_KEY = 'desktop:wallpaper'
@@ -361,8 +364,14 @@ function AppBody({ id }: { id: AppId }) {
       return <Terminal />
     case 'contact':
       return <Contact />
+    case 'games':
+      return <Games />
     case 'blackjack':
       return <Blackjack />
+    case 'higherLower':
+      return <HigherLower />
+    case 'memory':
+      return <Memory />
     case 'trash':
       return <Trash />
     case 'post':

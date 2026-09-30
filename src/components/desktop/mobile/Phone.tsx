@@ -5,7 +5,7 @@ import { useRef, useState, type PointerEvent, type ReactNode } from 'react'
 
 import PROJECTS from '@/data/projects'
 import type { PostMeta } from '@/lib/posts'
-import { APPS, DESKTOP_APPS, type WinId } from '../apps'
+import { APPS, DESKTOP_APPS, GAMES, type WinId } from '../apps'
 import type { Win } from '../state'
 import { dismissGesture, navigationGesture, type PhoneView } from './gestures'
 import styles from './phone.module.css'
@@ -194,18 +194,16 @@ function HomeScreen({ onView, onOpen, onPost, iconFor, posts }: Props) {
         </button>
       </div>
       <nav className={styles.dock} aria-label="Dock">
-        {(['projects', 'writing', 'terminal', 'blackjack'] as const).map(
-          (id) => (
-            <AppIcon
-              key={id}
-              id={id}
-              label={APPS[id].label ?? id}
-              icon={iconFor(id, 34)}
-              onClick={() => onOpen(id)}
-              dock
-            />
-          ),
-        )}
+        {(['projects', 'writing', 'terminal', 'games'] as const).map((id) => (
+          <AppIcon
+            key={id}
+            id={id}
+            label={APPS[id].label ?? id}
+            icon={iconFor(id, 34)}
+            onClick={() => onOpen(id)}
+            dock
+          />
+        ))}
       </nav>
     </div>
   )
@@ -348,7 +346,7 @@ type SearchResult = {
 function PhoneSearch({ onView, onOpen, onPost, posts }: Props) {
   const [query, setQuery] = useState('')
   const results: SearchResult[] = [
-    ...DESKTOP_APPS.map((id) => ({
+    ...[...DESKTOP_APPS, ...GAMES].map((id) => ({
       key: id,
       title: APPS[id].label ?? APPS[id].title,
       kind: 'App',

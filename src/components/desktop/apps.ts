@@ -9,7 +9,10 @@ export type AppId =
   | 'writing'
   | 'resume'
   | 'terminal'
+  | 'games'
   | 'blackjack'
+  | 'higherLower'
+  | 'memory'
   | 'contact'
   | 'trash'
   | 'post'
@@ -80,7 +83,38 @@ export const APPS: Record<AppId, AppSpec> = {
     h: 440,
   },
   contact: { title: 'Contact', label: 'Contact', icon: 'mail', w: 440, h: 320 },
-  blackjack: { title: 'Blackjack', label: 'Blackjack', icon: 'cards', path: '/blackjack', w: 560, h: 690 },
+  games: {
+    title: 'Games',
+    label: 'Games',
+    icon: 'arcade',
+    path: '/games',
+    w: 700,
+    h: 350,
+  },
+  blackjack: {
+    title: 'Blackjack',
+    label: 'Blackjack',
+    icon: 'cards',
+    path: '/games/blackjack',
+    w: 560,
+    h: 690,
+  },
+  higherLower: {
+    title: 'Higher or Lower',
+    label: 'Higher or Lower',
+    icon: 'hilo',
+    path: '/games/higher-lower',
+    w: 560,
+    h: 690,
+  },
+  memory: {
+    title: 'Pairs',
+    label: 'Pairs',
+    icon: 'pairs',
+    path: '/games/memory',
+    w: 560,
+    h: 620,
+  },
   trash: { title: 'Trash', icon: 'trash', w: 480, h: 360 },
   post: { title: 'Post', icon: 'page', w: 800, h: 1000 },
 }
@@ -99,8 +133,15 @@ export const DESKTOP_APPS: AppId[] = [
   'resume',
   'terminal',
   'contact',
-  'blackjack',
+  'games',
 ]
+
+/** Everything inside the Games folder, in the order it lists them. */
+export const GAMES = [
+  'blackjack',
+  'higherLower',
+  'memory',
+] as const satisfies AppId[]
 
 export function appForPath(pathname: string): AppId | null {
   if (pathname.startsWith('/blog/')) return 'post'

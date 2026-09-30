@@ -5,7 +5,7 @@ import PROJECTS, { KIND_LABEL } from '@/data/projects'
 import { EDUCATION, PROFILE } from '@/data/resume'
 import SKILLS from '@/data/skills'
 import { formatDate, shortMonth } from '@/lib/format'
-import { APPS, DESKTOP_APPS } from '../apps'
+import { APPS, DESKTOP_APPS, GAMES } from '../apps'
 import type { DesktopApi } from '../context'
 import { displayPath, resolve, type Dir, type FsNode } from './fs'
 
@@ -898,7 +898,7 @@ function openByName(target: string, env: ShellEnv): string | null {
     .toLowerCase()
     .replace(/^(my|the|your)\s+/, '')
     .trim()
-  const app = [...DESKTOP_APPS, 'trash' as const].find(
+  const app = [...DESKTOP_APPS, ...GAMES, 'trash' as const].find(
     (id) => id === q || APPS[id].label?.toLowerCase().startsWith(q),
   )
   if (app) {

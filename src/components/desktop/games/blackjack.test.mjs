@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { gameReducer, handValue, initialGame, shuffledDeck } from './game.ts'
+import {
+  DEALER_MAX_CARDS,
+  gameReducer,
+  handValue,
+  initialGame,
+  shuffledDeck,
+} from './blackjack.ts'
 
 // Put specified cards on top of a complete, unique deck.
 function deck(...ranks) {
@@ -98,6 +104,18 @@ test('dealer draws one card at a time below 17 and can bust', () => {
   assert.equal(state.dealer.length, 3)
   assert.equal(state.phase, 'dealer')
   assert.equal(finish(state).outcome, 'win')
+})
+test('dealer stops at five cards even when still under 17', () => {
+  // Dealer holds 2, 2 and draws 2, 3, 3 for 12 in five cards; the 4 stays in the deck.
+  const state = finish(
+    gameReducer(deal('10', '2', '8', '2', '2', '3', '3', '4'), {
+      type: 'stand',
+    }),
+  )
+  assert.equal(state.dealer.length, DEALER_MAX_CARDS)
+  assert.equal(handValue(state.dealer).total, 12)
+  assert.equal(state.deck[0].rank, '4')
+  assert.equal(state.outcome, 'win')
 })
 test('equal totals push and a higher dealer total loses', () => {
   assert.equal(

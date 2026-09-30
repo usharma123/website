@@ -1,3 +1,9 @@
+export type ResearchAcceptance = {
+  venue: string
+  url: string
+  status: string
+}
+
 export type ResearchProject = {
   title: string
   org: string
@@ -6,9 +12,32 @@ export type ResearchProject = {
   description: string
   stack: string[]
   highlight?: string
+  acceptances?: ResearchAcceptance[]
 }
 
 const RESEARCH: ResearchProject[] = [
+  {
+    title:
+      'Probing Physical Readability Under Temporal Straightening in Visual World Models',
+    org: 'NeurIPS 2026 Workshops',
+    startDate: 'September 2026',
+    endDate: 'September 2026',
+    description:
+      'Co-authored a paper investigating physical readability under temporal straightening in visual world models.',
+    stack: ['world models', 'physical AI', 'temporal straightening'],
+    acceptances: [
+      {
+        venue: 'World Models in Physical AI (WM PAI)',
+        url: 'https://www.worldmodels-physicalai.com/cfp.html',
+        status: 'Accepted as a poster',
+      },
+      {
+        venue: 'PTA: From Pretrained Representations to Acting Agents',
+        url: 'https://ptaworkshop.github.io/call-for-papers.html',
+        status: 'Accepted',
+      },
+    ],
+  },
   {
     title: 'Brownian Bridge Diffusion for CT → Synthetic MRI',
     org: 'Dream Team Engineering · Deep Brain Stimulation',
